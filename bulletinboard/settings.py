@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "bulletinboard.accounts",
-    "bulletinboard.settings",
+    "bulletinboard.contents",
     "rest_framework",
     "knox",
 ]

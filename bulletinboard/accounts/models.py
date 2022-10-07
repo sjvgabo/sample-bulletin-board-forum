@@ -46,5 +46,9 @@ class User(AbstractUser):
         "present_location",
     ]
 
+    def toggle_ban(self):
+        self.is_banned = not self.is_banned
+        self.save()
+
     def __str__(self):
         return self.first_name
