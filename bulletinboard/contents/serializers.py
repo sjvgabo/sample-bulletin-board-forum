@@ -8,11 +8,11 @@ class TopicSerializer(serializers.ModelSerializer):
     Serializer for Topics
     """
 
-    boards = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+    # boards = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
 
     class Meta:
         model = Topic
-        fields = ["pk", "name", "boards"]
+        fields = ["pk", "name"]
 
 
 class BoardSerializer(serializers.ModelSerializer):
@@ -72,4 +72,4 @@ class PostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ["pk", "author", "message", "thread"]
+        fields = ["pk", "author", "message", "thread", "date_created"]

@@ -7,5 +7,3 @@ admin.site.register(Topic)
 admin.site.register(Board)
 admin.site.register(Post)
 admin.site.register(Thread)
-
-

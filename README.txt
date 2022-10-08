@@ -54,3 +54,11 @@ AUTHORIZATION
 6. GET /content/topic/board/thread/<thread_pk>/posts
 
 - Returns the list of posts
+
+
+CSS Defaults
+
+Background - white
+Main - text-gray-800
+Secondary - 
+Header Background - bg-sky-700
