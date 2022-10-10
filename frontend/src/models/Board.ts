@@ -1,7 +1,7 @@
 import { Model, model, modelFlow, prop, _async, _await } from "mobx-keystone";
 import Thread from "./Thread";
 
-type ThreadData = {
+export type ThreadData = {
   pk: number;
   posts: number[];
   title: string;
@@ -24,11 +24,12 @@ export default class Board extends Model({
   // Fetches board threads from database
   @modelFlow
   fetchThreads = _async(function* (this: Board, pageNumber: number = 1) {
+    console.log('fetching threads')
     let response: Response;
     try {
       response = yield* _await(
         fetch(
-          `${process.env.REACT_APP_API_BASE_LINK}/content/topic/board/${this.pk}/threads?page=${pageNumber}`
+          `${process.env.REACT_APP_API_BASE_LINK}/content/board/${this.pk}/threads?page=${pageNumber}`
         )
       );
     } catch (error) {
@@ -61,4 +62,8 @@ export default class Board extends Model({
       this.threads = tempThreadList;
     }
   });
+
+  getThread = (threadPk: number) => {
+    return this.threads.find(thread => thread.pk === threadPk)
+  }
 }

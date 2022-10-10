@@ -3,6 +3,7 @@ import React from "react";
 
 import Store from "./store";
 import ContentStore from "./ContentStore";
+import AccountsStore from "./AccountsStore";
 
 const StoreContext = React.createContext<Store>({} as Store);
 
@@ -11,8 +12,10 @@ const { Provider: StoreProvider } = StoreContext;
 
 const createStore = () => {
   const contentStore = new ContentStore({});
+  const accountsStore = new AccountsStore({});
   const store = new Store({
     contentStore,
+    accountsStore,
   });
 
   registerRootStore(store);

@@ -25,6 +25,9 @@ class SignUpSerializer(serializers.ModelSerializer):
     date_of_birth = serializers.DateField()
     hometown = serializers.CharField()
     present_location = serializers.CharField()
+    gender = serializers.CharField(allow_blank=True)
+    interests = serializers.CharField(allow_blank=True)
+    website = serializers.CharField(allow_blank=True)
 
     class Meta:
         model = User
@@ -38,6 +41,9 @@ class SignUpSerializer(serializers.ModelSerializer):
             "about_myself",
             "hometown",
             "present_location",
+            "gender",
+            "interests",
+            "website",
         ]
 
     def validate(self, data):
@@ -46,7 +52,9 @@ class SignUpSerializer(serializers.ModelSerializer):
         password_validation.validate_password(data["password"])
 
         for value in data:
-            if not data[value]:
+            if value in ["gender", "website", "interests"]:
+                continue
+            elif not data[value]:
                 errors[value] = ["This field is required."]
 
         if errors:

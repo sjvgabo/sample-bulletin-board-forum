@@ -3,8 +3,8 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 
-const BoardCard = ({pk, name, description}: {pk: number, name: string, description: string}) => (
-  <Link to={`/board/${pk}`}>
+const BoardCard = ({topicPk, boardPk, name, description}: {topicPk: number, boardPk: number, name: string, description: string}) => (
+  <Link to={`topic/${topicPk}/board/${boardPk}`}>
             <div className="flex flex-col bg-slate-200 p-5 m-5 rounded-md ">
               <span className="text-gray-800">{name}</span>
 
