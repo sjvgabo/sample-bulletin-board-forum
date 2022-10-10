@@ -14,7 +14,6 @@ export default class ContentStore extends Model({
   @modelFlow
   fetchTopics = _async(function* (this: ContentStore) {
     let response: Response;
-    console.log(process.env.REACT_APP_API_BASE_LINK);
     try {
       response = yield* _await(
         fetch(`${process.env.REACT_APP_API_BASE_LINK}/content/topic/`)

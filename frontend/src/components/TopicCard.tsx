@@ -1,9 +1,12 @@
 import { observer } from "mobx-react-lite";
 import React from "react";
+import { Link } from "react-router-dom";
+import Board from "../models/Board";
 import Topic from "../models/Topic";
+import BoardCard from "./BoardCard";
 
 const TopicCard = ({ topic }: { topic: Topic }) => {
-  const boards = topic.fetchBoards();
+  const boards = topic.boards;
   console.log("boards", boards);
 
   return (
@@ -14,8 +17,10 @@ const TopicCard = ({ topic }: { topic: Topic }) => {
       <div>
         <span className="text-xl text-gray-800">{topic.name}</span>
       </div>
-      <div>
-        <span>{topic.boards.toString()}</span>
+      <div className="flex ">
+        {boards.map((board: Board) => (
+            <BoardCard name={board.name} pk={board.pk} description={board.description} />
+        ))}
       </div>
     </div>
   );
