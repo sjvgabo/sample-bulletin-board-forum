@@ -1,7 +1,7 @@
-from django.urls import path, include
+from django.urls import include, path
 from knox import views as knox_views
-from .views import SignUpView, LoginView
 
+from .views import LoginView, SignUpView
 
 urlpatterns = [
     path("registration/", SignUpView.as_view(), name="sign_up"),

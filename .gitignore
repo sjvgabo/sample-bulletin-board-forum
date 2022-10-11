@@ -6,7 +6,9 @@ db.sqlite3
 /staticfiles/*
 /mediafiles/*
 __pycache__/
-/.vscode/
+
+.vscode/*
+!.vscode/settings.json
 
 # coverage result
 .coverage

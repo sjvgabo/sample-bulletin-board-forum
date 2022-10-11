@@ -1,10 +1,10 @@
 from django.contrib.auth import login
-from rest_framework import status, permissions
-from rest_framework.views import APIView
-from rest_framework.response import Response
+from knox.views import LoginView as KnoxLoginView
+from rest_framework import permissions, status
 from rest_framework.authentication import BasicAuthentication
 from rest_framework.authtoken.serializers import AuthTokenSerializer
-from knox.views import LoginView as KnoxLoginView
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from .serializers import SignUpSerializer
 
@@ -46,10 +46,8 @@ class LoginView(KnoxLoginView):
             "key": token,
             "expiry": self.format_expiry_datetime(instance.expiry),
         }
-        if user_serializer is not None:
 
-            data["user"] = user_serializer(
-                request.user, context=self.get_context()
-            ).data
+        if user_serializer is not None:
+            data["user"] = user_serializer(request.user, context=self.get_context()).data
 
         return data

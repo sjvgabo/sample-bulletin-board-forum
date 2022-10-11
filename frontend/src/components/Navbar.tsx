@@ -1,9 +1,9 @@
 import { observer } from "mobx-react-lite";
 import React from "react";
 import { Link } from "react-router-dom";
-import UserNav from "./usernav";
+import UserNav from "./UserNav";
 
-const Navbar = () => {
+const Navbar: React.FC = () => {
   return (
     <div className="h-1/6 bg-sky-700 flex justify-between p-5">
       {/* Website Title */}

@@ -23,6 +23,7 @@ export default class ContentStore extends Model({
       console.error(error);
       return [];
     }
+
     let data: any;
     try {
       data = yield* _await(response.json());
@@ -30,6 +31,7 @@ export default class ContentStore extends Model({
       console.error(error);
       return [];
     }
+
     if (Array.isArray(data)) {
       let tempTopicList: Topic[];
       tempTopicList = [];
@@ -91,12 +93,14 @@ export default class ContentStore extends Model({
     } catch (error) {
       return;
     }
+
     let threadData: ThreadData;
     try {
       threadData = yield* _await(response.json());
     } catch (error) {
       return;
     }
+
     let thread: Thread;
     thread = new Thread({
       boardPk: threadData.board_pk,

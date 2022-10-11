@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Post, Thread, Board, Topic
+from .models import Board, Post, Thread, Topic
 
 
 class TopicSerializer(serializers.ModelSerializer):

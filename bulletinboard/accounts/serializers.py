@@ -1,7 +1,7 @@
+from django.contrib.auth import password_validation
+from knox.serializers import UserSerializer as BaseUserSerializer
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
-from knox.serializers import UserSerializer as BaseUserSerializer
-from django.contrib.auth import password_validation
 
 from .models import User
 
@@ -11,16 +11,12 @@ class SignUpSerializer(serializers.ModelSerializer):
     Serializer for user registration
     """
 
-    username = serializers.CharField(
-        validators=[UniqueValidator(queryset=User.objects.all())]
-    )
+    username = serializers.CharField(validators=[UniqueValidator(queryset=User.objects.all())])
     password = serializers.CharField(
         write_only=True,
         style={"input_type": "password"},
     )
-    email = serializers.EmailField(
-        validators=[UniqueValidator(queryset=User.objects.all())]
-    )
+    email = serializers.EmailField(validators=[UniqueValidator(queryset=User.objects.all())])
     about_myself = serializers.CharField()
     date_of_birth = serializers.DateField()
     hometown = serializers.CharField()

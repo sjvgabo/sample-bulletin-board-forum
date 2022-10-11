@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
-import { useStore } from "../stores";
-import { useParams } from "react-router";
 import { observer } from "mobx-react-lite";
-import Thread from "../models/Thread";
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router";
 import ThreadCard from "../components/ThreadCard";
+import Thread from "../models/Thread";
+import { useStore } from "../stores";
 
-const BoardPage = () => {
+const BoardPage: React.FC = () => {
   const store = useStore();
   let params: { boardPk: string; topicPk: string };
   params = useParams() as { boardPk: string; topicPk: string };

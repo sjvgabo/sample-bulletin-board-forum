@@ -1,6 +1,6 @@
 import React from "react";
 
-const ProfilePage = () => {
+const ProfilePage: React.FC = () => {
   return (
     <div>
       <span>Profile Screen</span>
