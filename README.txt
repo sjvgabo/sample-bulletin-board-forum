@@ -1,3 +1,14 @@
+Implemented:
+-login
+-view boards, threads, and posts
+
+To Implement
+-user profiles
+-paginate threads and posts
+-update threads and posts
+-postgresql migration
+
+
 API ENDPOINTS USED
 
 AUTHORIZATION
@@ -58,7 +69,8 @@ AUTHORIZATION
 
 CSS Defaults
 
-Background - white
+Main Background - bg-slate-200
+Card Background - white
 Main - text-gray-800
 Secondary - 
 Header Background - bg-sky-700

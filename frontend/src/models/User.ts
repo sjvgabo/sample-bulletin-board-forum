@@ -1,5 +1,4 @@
-import { Model, model, modelFlow, prop, _async, _await } from "mobx-keystone";
-import Board from "./Board";
+import { Model, model, prop } from "mobx-keystone";
 
 type UserData = {
   pk: number,

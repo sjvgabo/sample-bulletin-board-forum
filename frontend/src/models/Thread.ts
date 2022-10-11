@@ -21,11 +21,12 @@ export default class Thread extends Model({
 }) {
   @modelFlow
   fetchPosts = _async(function* (this: Thread, pageNumber: number = 1) {
+    console.log('fetching posts')
     let response: Response;
     try {
       response = yield* _await(
         fetch(
-          `${process.env.REACT_APP_API_BASE_LINK}/content/topic/board/thread/${this.pk}/posts?page=${pageNumber}`
+          `${process.env.REACT_APP_API_BASE_LINK}/content/thread/${this.pk}/posts?page=${pageNumber}`
         )
       );
     } catch (error) {

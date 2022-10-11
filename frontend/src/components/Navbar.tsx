@@ -1,3 +1,4 @@
+import { observer } from "mobx-react-lite";
 import React from "react";
 import { Link } from "react-router-dom";
 import UserNav from "./usernav";
@@ -8,7 +9,7 @@ const Navbar = () => {
       {/* Website Title */}
       <div>
         <Link to="/">
-          <text className="text-white text-4xl">The Food Forum</text>
+          <span className="text-white text-4xl">The Food Forum</span>
         </Link>
       </div>
 
@@ -20,4 +21,4 @@ const Navbar = () => {
   );
 };
 
-export default Navbar;
+export default observer(Navbar);

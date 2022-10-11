@@ -5,9 +5,9 @@ from . import views
 
 router = DefaultRouter()
 router.register(r"topic", views.TopicViewSet, basename="topic")
-router.register(r"topic/board", views.BoardViewSet, basename="board")
-router.register(r"topic/board/thread", views.ThreadViewSet, basename="thread")
-router.register(r"topic/board/thread/post", views.PostViewSet, basename="post")
+router.register(r"board", views.BoardViewSet, basename="board")
+router.register(r"thread", views.ThreadViewSet, basename="thread")
+router.register(r"post", views.PostViewSet, basename="post")
 
 
 urlpatterns = [

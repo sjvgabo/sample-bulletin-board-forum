@@ -1,7 +1,7 @@
-import { Model, model, modelFlow, prop, _async, _await } from "mobx-keystone";
+import { Model, model, modelFlow, prop, _async, _await, } from "mobx-keystone";
 import Board from "./Board";
 
-type BoardData = {
+export type BoardData = {
   threads: number[];
   pk: number;
   name: string;
@@ -56,5 +56,12 @@ export default class Topic extends Model({
       return
     }
   });
-  
+
+  getBoard = (boardPk: number) => {
+    return this.boards.find(board => board.pk === boardPk)
+  }
+
+  onInit() {
+    this.fetchBoards();
+  }
 }

@@ -28,8 +28,8 @@ function App() {
           <Route path="/" element={<NavigationPage />}>
             <Route path="*" element={<ErrorPage />} />
             <Route path="/" element={<Homepage />} />
-            <Route path="/board/:pk" element={<BoardPage />} />
-            <Route path="/board/thread/:pk" element={<ThreadPage />} />
+            <Route path="/topic/:topicPk/board/:boardPk" element={<BoardPage />} />
+            <Route path="/topic/:topicPk/board/:boardPk/thread/:threadPk" element={<ThreadPage />} />
             <Route path="/register" element={<RegistrationPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/profile" element={<ProfilePage />} />

@@ -2,9 +2,6 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 
 
-GENDER_CHOICES = [("M", "Male"), ("F", "Female"), ("O", "Others")]
-
-
 class User(AbstractUser):
     first_name = models.CharField(
         "First name",
@@ -24,8 +21,7 @@ class User(AbstractUser):
     website = models.CharField("Website", max_length=50, blank=True)
     gender = models.CharField(
         "Gender",
-        max_length=2,
-        choices=GENDER_CHOICES,
+        max_length=10,
         blank=True,
     )
     interests = models.TextField("Interest", max_length=200, blank=True)
