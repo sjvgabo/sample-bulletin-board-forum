@@ -1,6 +1,6 @@
+import localforage from "localforage";
 import { Model, model, modelFlow, prop, _async, _await } from "mobx-keystone";
 import moment from "moment";
-import localforage from "localforage";
 import User from "../models/User";
 
 type RegistrationInput = {
@@ -76,12 +76,14 @@ export default class AccountsStore extends Model({
     } catch (error) {
       return;
     }
+
     let data: any;
     try {
       data = yield* _await(response.json());
     } catch (error) {
       alert("Data parsing error");
     }
+
     if (data.user) {
       alert("Login success");
       yield* _await(
@@ -104,6 +106,7 @@ export default class AccountsStore extends Model({
   reAuthUser = _async(function* (this: AccountsStore) {
     let token: string | unknown;
     let expiry: Date | unknown;
+
     try {
       token = yield* _await(
         localforage.getItem(process.env.REACT_APP_TOKEN_KEY as string)
@@ -115,6 +118,7 @@ export default class AccountsStore extends Model({
       alert("Error in fetching tokens");
       console.log(error);
     }
+
     if (typeof token === "string" && expiry) {
       this.setAuthenticated(true);
       alert("Successfully re-authorized");

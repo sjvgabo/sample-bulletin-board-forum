@@ -1,9 +1,10 @@
 import { observer } from "mobx-react-lite";
+import React from "react";
 import TopicCard from "../components/TopicCard";
 import Topic from "../models/Topic";
 import { useStore } from "../stores";
 
-const Homepage = () => {
+const HomePage: React.FC = () => {
   const store = useStore();
   const topics = store.contentStore.topics;
 
@@ -20,4 +21,4 @@ const Homepage = () => {
   );
 };
 
-export default observer(Homepage);
+export default observer(HomePage);

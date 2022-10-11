@@ -1,9 +1,9 @@
 import { registerRootStore } from "mobx-keystone";
 import React from "react";
 
-import Store from "./store";
-import ContentStore from "./ContentStore";
 import AccountsStore from "./AccountsStore";
+import ContentStore from "./ContentStore";
+import Store from "./store";
 
 const StoreContext = React.createContext<Store>({} as Store);
 

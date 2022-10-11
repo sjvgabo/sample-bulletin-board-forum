@@ -1,12 +1,11 @@
 import moment from "moment";
+import React from "react";
 
+type Props = { date: Date };
 
-export default function TimeSince({date}: {date: Date} ) {
+const TimeSince: React.FC<Props> = ({ date }) => {
+  const timeSince = moment(date).fromNow();
+  return <span className="text-sm text-gray-500">{timeSince}</span>;
+};
 
-  let timeSince: string;
-  timeSince = moment(date).fromNow();
-  return (
-    <span className="text-sm text-gray-500">{timeSince}</span>
-  )
-  
-}
+export default TimeSince;

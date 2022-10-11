@@ -1,13 +1,9 @@
-from rest_framework import viewsets, permissions
+from bulletinboard.contents import serializers
+from bulletinboard.contents.models import Board, Post, Thread, Topic
+from bulletinboard.contents.serializers import BoardSerializer, PostSerializer, ThreadSerializer
+from rest_framework import permissions, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from bulletinboard.contents.models import Topic, Board, Thread, Post
-from bulletinboard.contents import serializers
-from bulletinboard.contents.serializers import (
-    BoardSerializer,
-    ThreadSerializer,
-    PostSerializer,
-)
 
 
 class TopicViewSet(viewsets.ReadOnlyModelViewSet):

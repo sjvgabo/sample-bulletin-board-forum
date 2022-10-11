@@ -3,7 +3,7 @@ import React from "react";
 import { Outlet } from "react-router";
 import Navbar from "../components/Navbar";
 
-const NavigationPage = () => {
+const NavigationPage: React.FC = () => {
   return (
     <div className="h-screen">
       {/* Navigation Bar */}

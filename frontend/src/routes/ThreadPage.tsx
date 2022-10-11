@@ -6,9 +6,9 @@ import PostCard from "../components/PostCard";
 import Board from "../models/Board";
 import Thread from "../models/Thread";
 import { useStore } from "../stores";
-import ErrorPage from "./errorpage";
+import ErrorPage from "./ErrorPage";
 
-const ThreadPage = () => {
+const ThreadPage: React.FC = () => {
   const store = useStore();
   let params: { boardPk: string; topicPk: string; threadPk: string };
   params = useParams() as {
@@ -26,18 +26,21 @@ const ThreadPage = () => {
       setBoard(
         (await store.contentStore.fetchBoard(parseInt(params.boardPk))) as Board
       );
-      setThread(
-        (await store.contentStore.fetchThread(
-          parseInt(params.threadPk)
-        )) as Thread
-      );
-      await thread?.fetchPosts(pageNumber);
+
+      const newThread = (await store.contentStore.fetchThread(
+        parseInt(params.threadPk)
+      )) as Thread;
+
+      setThread(newThread);
+      await newThread?.fetchPosts(pageNumber);
+
       setLoading(false);
     })();
-  }, []);
+  }, [pageNumber, params.boardPk, params.threadPk, store.contentStore]);
 
   console.log("Thread posts", thread?.posts);
   console.log(params);
+
   if (loading) {
     return <Loading />;
   }
@@ -75,8 +78,9 @@ const ThreadPage = () => {
           <div>
             <form className="flex flex-col">
               <input className="border-2 h-20 mb-2"></input>
-              <button className="bg-slate-400 text-white px-2 py-1 rounded">Comment</button>
-              
+              <button className="bg-slate-400 text-white px-2 py-1 rounded">
+                Comment
+              </button>
             </form>
           </div>
         </div>

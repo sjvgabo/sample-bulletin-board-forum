@@ -10,10 +10,10 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
-from pathlib import Path
-import environ
 import os
+from pathlib import Path
 
+import environ
 
 env = environ.Env(
     # set casting, default value
@@ -27,12 +27,12 @@ environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = env("SECRET_KEY")
+SECRET_KEY = env("DJANGO_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS")
 
 
 # Application definition
@@ -44,11 +44,12 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "bulletinboard.accounts",
-    "bulletinboard.contents",
+    "django_extensions",
     "rest_framework",
     "knox",
     "corsheaders",
+    "bulletinboard.accounts",
+    "bulletinboard.contents",
 ]
 
 MIDDLEWARE = [
@@ -87,10 +88,7 @@ WSGI_APPLICATION = "bulletinboard.wsgi.application"
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
+    "default": env.db(),
 }
 
 
@@ -148,11 +146,4 @@ REST_FRAMEWORK = {
 REST_KNOX = {"USER_SERIALIZER": "bulletinboard.accounts.serializers.UserSerializer"}
 
 # Allowed origins
-CORS_ALLOWED_ORIGINS = [
-    "https://example.com",
-    "https://sub.example.com",
-    "http://localhost:8080",
-    "http://127.0.0.1:9000",
-    "http://localhost:3000",
-    "http://192.168.1.4:3000",
-]
+CORS_ALLOWED_ORIGINS = env.list("DJANGO_CORS_ALLOWED_HOSTS")

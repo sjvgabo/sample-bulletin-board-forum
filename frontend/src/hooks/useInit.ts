@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { createStore, Store } from '../stores';
+import { useEffect, useState } from "react";
+import { createStore, Store } from "../stores";
 
 const useInit = () => {
   const [ready, setReady] = useState(false);
@@ -21,4 +21,3 @@ const useInit = () => {
 };
 
 export default useInit;
-             

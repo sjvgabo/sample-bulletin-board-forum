@@ -24,46 +24,41 @@ export default class Board extends Model({
   // Fetches board threads from database
   @modelFlow
   fetchThreads = _async(function* (this: Board, pageNumber: number = 1) {
-    console.log('fetching threads')
+    console.log("fetching threads");
     let response: Response;
     try {
       response = yield* _await(
         fetch(
-          `${process.env.REACT_APP_API_BASE_LINK}/content/board/${this.pk}/threads?page=${pageNumber}`
+          `${process.env.REACT_APP_API_BASE_LINK}/content/board/${this.pk}/threads/?page=${pageNumber}`
         )
       );
     } catch (error) {
       console.error(error);
-      return [];
+      return;
     }
-    let data: any;
+
+    let data: any = [];
     try {
       data = yield* _await(response.json());
     } catch (error) {
       console.error(error);
-      return [];
+      return;
     }
-    if (Array.isArray(data)) {
-      let tempThreadList: Thread[];
-      tempThreadList = [];
-      data.forEach((thread: ThreadData) => {
-        tempThreadList.push(
-          new Thread({
-            boardPk: thread.board_pk,
-            title: thread.title,
-            noOfPosts: thread.no_of_posts,
-            pk: thread.pk,
-            isSticky: thread.is_sticky,
-            isLocked: thread.is_locked,
-          })
-        );
-      });
 
-      this.threads = tempThreadList;
-    }
+    this.threads = data.map(
+      (thread: ThreadData) =>
+        new Thread({
+          boardPk: thread.board_pk,
+          title: thread.title,
+          noOfPosts: thread.no_of_posts,
+          pk: thread.pk,
+          isSticky: thread.is_sticky,
+          isLocked: thread.is_locked,
+        })
+    );
   });
 
   getThread = (threadPk: number) => {
-    return this.threads.find(thread => thread.pk === threadPk)
-  }
+    return this.threads.find((thread) => thread.pk === threadPk);
+  };
 }

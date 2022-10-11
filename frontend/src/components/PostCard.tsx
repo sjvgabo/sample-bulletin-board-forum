@@ -2,15 +2,13 @@ import { observer } from "mobx-react-lite";
 import React from "react";
 import TimeSince from "./TimeSince";
 
-const PostCard = ({
-  authorPk,
-  message,
-  date,
-}: {
+type Props = {
   authorPk: number;
   message: string;
   date: Date;
-}) => {
+};
+
+const PostCard: React.FC<Props> = ({ authorPk, message, date }) => {
   return (
     <div className="flex flex-col my-7">
       <div className="flex">

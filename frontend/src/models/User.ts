@@ -1,24 +1,5 @@
 import { Model, model, prop } from "mobx-keystone";
 
-type UserData = {
-  pk: number,
-  username: string,
-  first_name: string,
-  last_name: string,
-  email: string,
-  date_of_birth: Date,
-  about_myself: string,
-  hometown: string,
-  present_location: string,
-  gender: string,
-  interests: string,
-  website: string,
-  is_poster: boolean,
-  is_moderator: boolean,
-  is_administrator: boolean,
-  is_banned: boolean
-};
-
 @model("bulletinboard/User")
 export default class User extends Model({
   pk: prop<number>(),
@@ -36,8 +17,5 @@ export default class User extends Model({
   is_poster: prop<boolean>(),
   is_moderator: prop<boolean>(),
   is_administrator: prop<boolean>(),
-  is_banned: prop<boolean>()
-
-}) {
-  
-}
+  is_banned: prop<boolean>(),
+}) {}

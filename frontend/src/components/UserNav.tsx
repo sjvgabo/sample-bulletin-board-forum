@@ -3,9 +3,10 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { useStore } from "../stores";
 
-const UserNav = () => {
+const UserNav: React.FC = () => {
   const store = useStore();
   const isAuthenticated = store.accountsStore.authenticated;
+
   if (isAuthenticated) {
     return (
       <div>

@@ -1,4 +1,4 @@
-import { Model, model, modelFlow, prop, _async, _await, } from "mobx-keystone";
+import { Model, model, modelFlow, prop, _async, _await } from "mobx-keystone";
 import Board from "./Board";
 
 export type BoardData = {
@@ -20,6 +20,7 @@ export default class Topic extends Model({
   @modelFlow
   fetchBoards = _async(function* (this: Topic, pageNumber: number = 1) {
     let response: Response;
+
     try {
       response = yield* _await(
         fetch(
@@ -28,38 +29,33 @@ export default class Topic extends Model({
       );
     } catch (error) {
       console.log("FETCH ERROR:", error);
-      return [];
+      return;
     }
-    let data: any;
+
+    let data: any = [];
     try {
       data = yield* _await(response.json());
     } catch (error) {
       console.log("PARSE ERROR", error);
-      return [];
+      return;
     }
-    if (Array.isArray(data)) {
-      let tempBoardsList: Board[];
-      tempBoardsList = [];
-      data.forEach((board: BoardData) => {
-        tempBoardsList.push(
-          new Board({
-            topic_pk: board.topic,
-            name: board.name,
-            description: board.description,
-            no_of_threads: board.no_of_threads,
-            no_of_posts: board.no_of_posts,
-            pk: board.pk,
-          })
-        );
-      });
-      this.boards = tempBoardsList
-      return
-    }
+
+    this.boards = data.map(
+      (board: BoardData) =>
+        new Board({
+          topic_pk: board.topic,
+          name: board.name,
+          description: board.description,
+          no_of_threads: board.no_of_threads,
+          no_of_posts: board.no_of_posts,
+          pk: board.pk,
+        })
+    );
   });
 
   getBoard = (boardPk: number) => {
-    return this.boards.find(board => board.pk === boardPk)
-  }
+    return this.boards.find((board) => board.pk === boardPk);
+  };
 
   onInit() {
     this.fetchBoards();
