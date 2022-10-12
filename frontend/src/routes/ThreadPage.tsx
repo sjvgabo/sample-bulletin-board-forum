@@ -11,6 +11,7 @@ import ErrorPage from "./ErrorPage";
 
 const ThreadPage: React.FC = () => {
   const store = useStore();
+  const isAunthenticateed = store.accountsStore.authenticated;
   let params: { boardPk: string; topicPk: string; threadPk: string };
   params = useParams() as {
     boardPk: string;
@@ -75,7 +76,7 @@ const ThreadPage: React.FC = () => {
 
           {/* Reply component */}
           <div>
-            <PostForm threadPk={parseInt(params.threadPk)} />
+            {(!thread.isLocked && isAunthenticateed) &&  <PostForm threadPk={parseInt(params.threadPk)} />}
           </div>
 
         </div>

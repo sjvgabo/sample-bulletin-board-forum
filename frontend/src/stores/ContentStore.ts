@@ -123,6 +123,7 @@ export default class ContentStore extends Model({
     authorPk: number
   ) {
     const token = tokenCtx.get(this);
+    
     let response: Response;
     alert(authorPk);
     try {

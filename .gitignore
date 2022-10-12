@@ -7,8 +7,8 @@ db.sqlite3
 /mediafiles/*
 __pycache__/
 
-.vscode/*
-!.vscode/settings.json
+#.vscode/*
+#!.vscode/settings.json
 
 # coverage result
 .coverage

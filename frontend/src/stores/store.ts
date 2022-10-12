@@ -4,6 +4,7 @@ import AccountsStore from "./AccountsStore";
 import ContentStore from "./ContentStore";
 
 export const tokenCtx = createContext<string>();
+
 @model("bulletin-board/Store")
 export default class Store extends Model({
   contentStore: prop<ContentStore>(),

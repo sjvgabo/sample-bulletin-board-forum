@@ -46,6 +46,7 @@ type UserAPIData = {
 @model("bulletin-board/AccountsStore")
 export default class AccountsStore extends Model({
   authenticated_user: prop<UserAPIData | undefined>(),
+  currentUser: prop<User | undefined>(),
   authenticated: prop<boolean>(false).withSetter(),
   token: prop<string>(""),
 }) {
@@ -104,7 +105,6 @@ export default class AccountsStore extends Model({
     }
 
     if (data.user) {
-      alert("Login success");
       yield* _await(
         localforage.setItem(process.env.REACT_APP_TOKEN_KEY as string, data.key)
       );
@@ -123,6 +123,7 @@ export default class AccountsStore extends Model({
       this.setAuthenticated(true);
       this.authenticated_user = data.user;
       this.token = data.key;
+      alert(this.token)
       return;
     } else {
       alert("Login failed. Wrong password / username");
@@ -200,4 +201,22 @@ export default class AccountsStore extends Model({
     this.authenticated_user = undefined;
     this.token = "";
   });
+
+  @modelFlow
+  fetchUser = _async(function* (this: AccountsStore, userPk: number) {
+    let response: Response;
+    let data: [];
+    try {
+      response = yield* _await(fetch(`${process.env.REACT_APP_API_BASE_LINK}/auth/users/${userPk}`))
+      if (response.ok) {
+        let data: UserAPIData;
+        data = yield* _await(response.json());
+        this.currentUser = new User({
+          ...data
+      })
+      }
+    } catch (error) {
+
+    }
+  })
 }

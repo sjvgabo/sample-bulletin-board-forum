@@ -9,17 +9,20 @@ const UserNav: React.FC = () => {
   const user = store.accountsStore.authenticated_user;
   const handleClick = () => {
     store.accountsStore.logOutUser();
-  }
+  };
 
-  if (isAuthenticated) {
+  if (isAuthenticated && user) {
     return (
       <div>
         <div>
           <span className="text-white">Hello, {user?.username}</span>
         </div>
-        <div>
-          <span className="text-white">Profile Page</span>
-        </div>
+        <Link to={`/profile/${user.pk}`}>
+          <div>
+            <span className="text-white">Profile Page</span>
+          </div>
+        </Link>
+
         <div>
           <button className="text-white" onClick={handleClick}>
             Log Out
