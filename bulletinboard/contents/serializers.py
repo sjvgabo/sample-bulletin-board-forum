@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Board, Post, Thread, Topic
+from .models import Board, Post, Thread, Topic, User
 
 
 class TopicSerializer(serializers.ModelSerializer):
@@ -34,6 +34,7 @@ class BoardSerializer(serializers.ModelSerializer):
             "no_of_posts",
             "topic",
         ]
+        read_only_fields = ["pk", "board", "title", "no_of_posts", "no_of_threads"]
 
 
 class ThreadSerializer(serializers.ModelSerializer):
@@ -47,6 +48,11 @@ class ThreadSerializer(serializers.ModelSerializer):
     )
     posts = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
 
+    author = serializers.PrimaryKeyRelatedField(
+        queryset=User.objects.all(),
+        many=False,
+    )
+
     class Meta:
         model = Thread
         fields = [
@@ -57,7 +63,10 @@ class ThreadSerializer(serializers.ModelSerializer):
             "is_locked",
             "no_of_posts",
             "board",
+            "author",
         ]
+
+        read_only_fields = ["pk", "board", "no_of_posts"]
 
 
 class PostSerializer(serializers.ModelSerializer):
@@ -69,7 +78,12 @@ class PostSerializer(serializers.ModelSerializer):
         queryset=Thread.objects.all(),
         many=False,
     )
+    author = serializers.PrimaryKeyRelatedField(
+        queryset=User.objects.all(),
+        many=False,
+    )
 
     class Meta:
         model = Post
         fields = ["pk", "author", "message", "thread", "date_created"]
+        read_only_fields = ["pk", "author", "thread", "date_created"]

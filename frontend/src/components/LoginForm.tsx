@@ -19,8 +19,8 @@ const LoginForm: React.FC = () => {
       password: Yup.string().required("Required"),
     }),
     onSubmit: async (values) => {
-      let loginSuccess = await store.accountsStore.authUser(values);
-      if (loginSuccess) {
+      await store.accountsStore.authUser(values);
+      if (store.accountsStore.authenticated) {
         navigate("/");
       }
     },

@@ -3,9 +3,9 @@ import Post from "./Post";
 
 type PostData = {
   pk: number;
-  author_pk: number;
+  author: number;
   message: string;
-  thread_pk: number;
+  thread: number;
   date_created: Date;
 };
 
@@ -46,9 +46,9 @@ export default class Thread extends Model({
     this.posts = data.map(
       (post: PostData) =>
         new Post({
-          authorPk: post.author_pk,
+          authorPk: post.author,
           pk: post.pk,
-          threadPk: post.thread_pk,
+          threadPk: post.thread,
           message: post.message,
           date_created: post.date_created,
         })

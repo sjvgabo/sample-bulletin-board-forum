@@ -1,0 +1,49 @@
+import { useFormik } from "formik";
+import { observer } from "mobx-react-lite";
+import React from "react";
+import * as Yup from "yup";
+import { useStore } from "../stores";
+
+type Props = {
+  boardPk: number;
+};
+const ThreadForm: React.FC<Props> = ({ boardPk }) => {
+  const store = useStore();
+  const authorPk = store.accountsStore.authenticated_user?.pk as number;
+
+  const { handleSubmit, handleChange, values, errors } = useFormik({
+    initialValues: {
+      title: "",
+    },
+    validationSchema: Yup.object({
+      title: Yup.string().required("Post must not be empty"),
+    }),
+    onSubmit: async (values) => {
+      await store.contentStore.createThread(values.title, boardPk, authorPk);
+    },
+  });
+
+  return (
+    
+    <form className="flex flex-col" onSubmit={handleSubmit}>
+      <label>Create new thread</label>
+      <input
+        className="border-2  mb-2"
+        type="text"
+        id="title"
+        name="title"
+        placeholder="Title"
+        value={values.title}
+        onChange={handleChange}
+      />
+      <button
+        className="bg-slate-400 text-white px-2 py-1 rounded"
+        type="submit"
+      >
+        Submit
+      </button>
+    </form>
+  );
+};
+
+export default observer(ThreadForm);

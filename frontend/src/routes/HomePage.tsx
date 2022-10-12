@@ -1,5 +1,6 @@
 import { observer } from "mobx-react-lite";
 import React from "react";
+import AdminFunctions from "../components/AdminFunctions";
 import TopicCard from "../components/TopicCard";
 import Topic from "../models/Topic";
 import { useStore } from "../stores";
@@ -11,6 +12,9 @@ const HomePage: React.FC = () => {
   return (
     <div className="min-h-full h-screen bg-slate-200 pt-10">
       <div className="">
+        <div>
+          <AdminFunctions />
+        </div>
         <div className="">
           {topics.map((topic: Topic) => (
             <TopicCard key={topic.pk} topic={topic} />

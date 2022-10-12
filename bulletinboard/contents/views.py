@@ -1,6 +1,18 @@
+import logging
 from bulletinboard.contents import serializers
 from bulletinboard.contents.models import Board, Post, Thread, Topic
-from bulletinboard.contents.serializers import BoardSerializer, PostSerializer, ThreadSerializer
+from bulletinboard.contents.permissions import (
+    IsAdministratorOrReadOnly,
+    IsNotBanned,
+    IsNotBannedOrReadOnly,
+    IsOwnerOrReadOnly,
+    IsModeratorOrAdministratorOrReadOnly,
+)
+from bulletinboard.contents.serializers import (
+    BoardSerializer,
+    PostSerializer,
+    ThreadSerializer,
+)
 from rest_framework import permissions, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -46,6 +58,19 @@ class BoardViewSet(viewsets.ModelViewSet):
         threads_json = ThreadSerializer(paginated_threads, many=True)
         return Response(threads_json.data)
 
+    def get_permissions(self):
+        """
+        Instantiates and returns the list of permissions that this view requires.
+        """
+        if self.action in ["create", "delete", "update", "partial_update"]:
+            permission_classes = [
+                permissions.IsAuthenticatedOrReadOnly,
+                IsAdministratorOrReadOnly,
+            ]
+        else:
+            permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+        return [permission() for permission in permission_classes]
+
 
 class ThreadViewSet(viewsets.ModelViewSet):
     """
@@ -73,6 +98,28 @@ class ThreadViewSet(viewsets.ModelViewSet):
         posts_json = PostSerializer(paginated_posts, many=True)
         return Response(posts_json.data)
 
+    def get_permissions(self):
+        """
+        Instantiates and returns the list of permissions that this view requires.
+
+        """
+        if self.action == "destroy":
+            permission_classes = [
+                permissions.IsAuthenticatedOrReadOnly,
+                IsOwnerOrReadOnly,
+            ]
+        elif self.action in ["update", "partial_update"]:
+            permission_classes = [IsModeratorOrAdministratorOrReadOnly]
+        elif self.action == "create":
+            permission_classes = [
+                permissions.IsAuthenticatedOrReadOnly,
+                IsNotBanned,
+                IsOwnerOrReadOnly,
+            ]
+        else:
+            permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+        return [permission() for permission in permission_classes]
+
 
 class PostViewSet(viewsets.ModelViewSet):
     """
@@ -80,5 +127,9 @@ class PostViewSet(viewsets.ModelViewSet):
     """
 
     queryset = Post.objects.all()
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [
+        permissions.IsAuthenticatedOrReadOnly,
+        IsOwnerOrReadOnly,
+        IsNotBannedOrReadOnly,
+    ]
     serializer_class = serializers.PostSerializer

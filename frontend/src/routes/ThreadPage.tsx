@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Loading } from "../components/Loading";
 import PostCard from "../components/PostCard";
+import PostForm from "../components/PostForm";
 import Board from "../models/Board";
 import Thread from "../models/Thread";
 import { useStore } from "../stores";
@@ -38,9 +39,6 @@ const ThreadPage: React.FC = () => {
     })();
   }, [pageNumber, params.boardPk, params.threadPk, store.contentStore]);
 
-  console.log("Thread posts", thread?.posts);
-  console.log(params);
-
   if (loading) {
     return <Loading />;
   }
@@ -67,22 +65,19 @@ const ThreadPage: React.FC = () => {
                   authorPk={post.authorPk}
                   message={post.message}
                   date={post.date_created}
+                  postPk={post.pk}
                 />
               ))}
             </div>
           ) : (
-            <div>No posts yet </div>
+            <div>No posts yet</div>
           )}
 
           {/* Reply component */}
           <div>
-            <form className="flex flex-col">
-              <input className="border-2 h-20 mb-2"></input>
-              <button className="bg-slate-400 text-white px-2 py-1 rounded">
-                Comment
-              </button>
-            </form>
+            <PostForm threadPk={parseInt(params.threadPk)} />
           </div>
+
         </div>
       ) : (
         <ErrorPage />

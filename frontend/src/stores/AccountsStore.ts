@@ -23,12 +23,31 @@ type LoginDataInput = {
   password: string;
 };
 
+type UserAPIData = {
+  pk: number;
+  username: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  date_of_birth: Date;
+  about_myself: string;
+  hometown: string;
+  present_location: string;
+  gender: string;
+  interests: string;
+  website: string;
+  is_poster: boolean;
+  is_moderator: boolean;
+  is_administrator: boolean;
+  is_banned: boolean;
+};
+
 // Handles authentication and user management
 @model("bulletin-board/AccountsStore")
 export default class AccountsStore extends Model({
-  authenticated_user: prop<User | undefined>(),
+  authenticated_user: prop<UserAPIData | undefined>(),
   authenticated: prop<boolean>(false).withSetter(),
-  token: prop<string | undefined>(),
+  token: prop<string>(""),
 }) {
   @modelFlow
   createUser = _async(function* (this: AccountsStore, data: RegistrationInput) {
@@ -92,11 +111,19 @@ export default class AccountsStore extends Model({
       yield* _await(
         localforage.setItem(
           process.env.REACT_APP_EXPIRY_KEY as string,
-          JSON.stringify(data.expiry)
+          data.expiry
+        )
+      );
+      yield* _await(
+        localforage.setItem(
+          process.env.REACT_APP_USER_INFO_KEY as string,
+          data.user
         )
       );
       this.setAuthenticated(true);
-      return true;
+      this.authenticated_user = data.user;
+      this.token = data.key;
+      return;
     } else {
       alert("Login failed. Wrong password / username");
     }
@@ -106,6 +133,7 @@ export default class AccountsStore extends Model({
   reAuthUser = _async(function* (this: AccountsStore) {
     let token: string | unknown;
     let expiry: Date | unknown;
+    let userData: UserAPIData | null;
 
     try {
       token = yield* _await(
@@ -114,14 +142,21 @@ export default class AccountsStore extends Model({
       expiry = yield* _await(
         localforage.getItem(process.env.REACT_APP_EXPIRY_KEY as string)
       );
+      userData = yield* _await(
+        localforage.getItem<UserAPIData>(
+          process.env.REACT_APP_USER_INFO_KEY as string
+        )
+      );
     } catch (error) {
       alert("Error in fetching tokens");
       console.log(error);
+      return;
     }
 
-    if (typeof token === "string" && expiry) {
+    if (typeof token === "string" && expiry && userData) {
       this.setAuthenticated(true);
-      alert("Successfully re-authorized");
+      this.token = token;
+      this.authenticated_user = userData;
     } else {
       return;
     }
@@ -129,13 +164,40 @@ export default class AccountsStore extends Model({
 
   @modelFlow
   logOutUser = _async(function* (this: AccountsStore) {
+    // Log user out of api
+    let response: Response;
+    console.log("TOKEN:", this.token);
+    try {
+      response = yield* _await(
+        fetch(`${process.env.REACT_APP_API_BASE_LINK}/auth/logout/`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Token ${this.token}`,
+          },
+        })
+      );
+    } catch (error) {
+      alert("Error logging user out.");
+      return;
+    }
+
+    if (!response.ok) {
+      alert(response.status);
+      return;
+    }
+
+    // Clear local forage
     try {
       yield* _await(localforage.clear());
     } catch (error) {
+      alert("Error clearing localforage");
       console.log(error);
+      return;
     }
 
     this.setAuthenticated(false);
     this.authenticated_user = undefined;
+    this.token = "";
   });
 }

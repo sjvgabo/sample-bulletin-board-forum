@@ -11,12 +11,16 @@ class SignUpSerializer(serializers.ModelSerializer):
     Serializer for user registration
     """
 
-    username = serializers.CharField(validators=[UniqueValidator(queryset=User.objects.all())])
+    username = serializers.CharField(
+        validators=[UniqueValidator(queryset=User.objects.all())]
+    )
     password = serializers.CharField(
         write_only=True,
         style={"input_type": "password"},
     )
-    email = serializers.EmailField(validators=[UniqueValidator(queryset=User.objects.all())])
+    email = serializers.EmailField(
+        validators=[UniqueValidator(queryset=User.objects.all())]
+    )
     about_myself = serializers.CharField()
     date_of_birth = serializers.DateField()
     hometown = serializers.CharField()
@@ -68,7 +72,7 @@ class SignUpSerializer(serializers.ModelSerializer):
 
 class UserSerializer(BaseUserSerializer):
     """
-    Serializes the user data upon logging in
+    Serializes the user data upon logging in / fetching data from UserViewSet
     """
 
     class Meta:
@@ -91,3 +95,29 @@ class UserSerializer(BaseUserSerializer):
             "is_administrator",
             "is_banned",
         ]
+
+        read_only_fields = [
+            "pk",
+            "username",
+            "first_name",
+            "last_name",
+            "email",
+            "is_poster",
+            "is_moderator",
+            "is_administrator",
+            "is_banned",
+        ]
+
+
+class BanUserSerializer(BaseUserSerializer):
+    """
+    Serializer for administrators and moderators to ban/unban users
+    """
+
+    class Meta:
+        model = User
+        fields = [
+            "username",
+            "is_banned",
+        ]
+        read_only_fields = ["username"]
