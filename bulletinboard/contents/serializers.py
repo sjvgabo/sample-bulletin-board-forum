@@ -64,7 +64,7 @@ class ThreadSerializer(serializers.ModelSerializer):
             "no_of_posts",
             "board",
             "author",
-            "author_username"
+            "author_username",
         ]
 
         read_only_fields = ["pk", "board", "no_of_posts", "author_username"]
@@ -86,5 +86,12 @@ class PostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ["pk", "author", "message", "thread", "date_created", "author_username"]
+        fields = [
+            "pk",
+            "author",
+            "message",
+            "thread",
+            "date_created",
+            "author_username",
+        ]
         read_only_fields = ["pk", "author", "thread", "date_created", "author_username"]

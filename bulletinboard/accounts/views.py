@@ -82,10 +82,11 @@ class UserViewSet(
         Returns paginated threads under the board (Default: 20 items)
         """
         user = self.get_object()
-        posts = Post.objects.filter(author=user).order_by('-date_created')
+        posts = Post.objects.filter(author=user).order_by("-date_created")
         paginated_posts = self.paginate_queryset(posts)
         user_posts_json = PostSerializer(paginated_posts, many=True)
         return Response(user_posts_json.data)
+
 
 class BanUserViewSet(
     viewsets.GenericViewSet,

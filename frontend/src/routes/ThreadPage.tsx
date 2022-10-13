@@ -1,5 +1,6 @@
 import { observer } from "mobx-react-lite";
 import React, { useEffect, useState } from "react";
+import ReactPaginate from "react-paginate";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import DeleteButton from "../components/DeleteButton";
 import Divider from "../components/Divider";
@@ -63,6 +64,10 @@ const ThreadPage: React.FC = () => {
     } 
   }
 
+  const handlePageClick = () => {
+
+  }
+
   return (
     <div className="bg-slate-200 min-h-full h-auto p-10">
       {/* Shows error if board and/or thread is undefined */}
@@ -101,6 +106,14 @@ const ThreadPage: React.FC = () => {
           ) : (
             <div>No posts yet</div>
           )}
+
+          {/* Pagination */}
+          <ReactPaginate 
+            nextLabel=">"
+            previousLabel="<"
+            pageCount={pageNumber}
+            
+          />
 
           {/* Reply component */}
           <div>

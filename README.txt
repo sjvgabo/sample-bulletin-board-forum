@@ -1,37 +1,3 @@
-Implemented:
--login
--view boards, threads, and posts
-
-To Implement
--user profiles
--paginate threads and posts
--update threads and posts
--postgresql migration
-
-Done
-1. Fix post api permission
-2. 
-
-Sample users USED
-
-Moderator:
-moderator
-P@ssword123
-
-Administrator:
-administrator
-P@ssword123
-
-Banned:
-banned123
-P@ssword123
-
-Poster:
-poster123
-P@ssword123
-
-
-
 API ENDPOINTS USED
 
 AUTHORIZATION
