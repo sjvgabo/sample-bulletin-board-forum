@@ -19,6 +19,8 @@ const BoardForm: React.FC<Props> = ({ handleCreateBoard }) => {
     }),
     onSubmit: async (values) => {
       handleCreateBoard(values.name, values.description);
+      values.name = ""
+      values.description = ""
     },
   });
 

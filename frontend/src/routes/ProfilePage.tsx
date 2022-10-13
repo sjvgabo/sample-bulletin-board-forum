@@ -22,6 +22,7 @@ const ProfilePage: React.FC = () => {
   const [pageNumber, setPageNumber] = useState<number>(1);
   const defaultPageItems = 20;
   const [pageCount, setPageCount] = useState<number>(1);
+  const postLength = user?.user_posts.length || 0;
 
   useEffect(() => {
     setIsOwnProfile(
@@ -31,12 +32,20 @@ const ProfilePage: React.FC = () => {
       await store.accountsStore.fetchUser(parseInt(params.userPk));
       await store.accountsStore.fetchPosts(parseInt(params.userPk), pageNumber);
       setUser(store.accountsStore.currentUser);
-      if (user) {
-        setPageCount(Math.ceil(user?.user_posts.length / defaultPageItems));
+      if (postLength) {
+        setPageCount(Math.ceil(postLength / defaultPageItems));
       }
+
       setLoading(false);
     })();
-  }, [params.userPk, store.accountsStore.authenticated_user?.pk, edit, store.accountsStore, pageNumber, user]);
+  }, [
+    params.userPk,
+    store.accountsStore.authenticated_user?.pk,
+    edit,
+    pageNumber,
+    store.accountsStore,
+    postLength,
+  ]);
 
   const handleEditButton = () => {
     setEdit(true);
