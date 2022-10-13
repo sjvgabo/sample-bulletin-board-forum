@@ -53,7 +53,7 @@ class Thread(models.Model):
     )
 
     class Meta:
-        ordering = ("-is_sticky",)
+        ordering = ("-is_sticky")
 
     def __str__(self):
         return self.title
@@ -87,7 +87,7 @@ class Post(models.Model):
 
     class Meta:
         ordering = ["date_created"]
-        get_latest_by = ["date_created"]
+        get_latest_by = ["-date_created"]
 
     def __str__(self):
         return self.message

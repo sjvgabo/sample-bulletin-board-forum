@@ -1,53 +1,61 @@
 import { useFormik } from "formik";
 import { observer } from "mobx-react-lite";
 import React from "react";
+import { useNavigate } from "react-router";
 import * as Yup from "yup";
 import { useStore } from "../stores";
 
 const RegistrationForm: React.FC = () => {
   const store = useStore();
+  const navigate = useNavigate();
 
-  const { handleSubmit, handleChange, values, touched, errors } = useFormik({
-    initialValues: {
-      username: "",
-      password: "",
-      first_name: "",
-      last_name: "",
-      email: "",
-      date_of_birth: "",
-      about_myself: "",
-      hometown: "",
-      present_location: "",
-      gender: "",
-      interests: "",
-      website: "",
-    },
-    validationSchema: Yup.object({
-      username: Yup.string()
-        .min(8, "Atleast 8 characters")
-        .required("Required"),
-      password: Yup.string()
-        .min(8, "Atleast 8 characters")
-        .required("Required"),
-      first_name: Yup.string().required("Required"),
-      last_name: Yup.string().required("Required"),
-      email: Yup.string().email().required("Required"),
-      date_of_birth: Yup.string().required("Required"),
-      about_myself: Yup.string().required("Required"),
-      hometown: Yup.string()
-        .max(50, "Max of 50 characters")
-        .required("Required"),
-      present_location: Yup.string()
-        .max(100, "Max of 100 characters")
-        .required("Required"),
-      gender: Yup.string().max(10, "Max of 10 characters").notRequired(),
-      interests: Yup.string().max(200, "Max of 200 characters").notRequired(),
-      website: Yup.string().url().max(50, "Max of 50 characters").notRequired(),
-    }),
-    onSubmit: async (values) => {
-      await store.accountsStore.createUser(values);
-    },
-  });
+  const { handleSubmit, handleChange, values, touched, errors, resetForm } =
+    useFormik({
+      initialValues: {
+        username: "",
+        password: "",
+        first_name: "",
+        last_name: "",
+        email: "",
+        date_of_birth: "",
+        about_myself: "",
+        hometown: "",
+        present_location: "",
+        gender: "",
+        interests: "",
+        website: "",
+      },
+      validationSchema: Yup.object({
+        username: Yup.string()
+          .min(8, "Atleast 8 characters")
+          .required("Required"),
+        password: Yup.string()
+          .min(8, "Atleast 8 characters")
+          .required("Required"),
+        first_name: Yup.string().required("Required"),
+        last_name: Yup.string().required("Required"),
+        email: Yup.string().email().required("Required"),
+        date_of_birth: Yup.string().required("Required"),
+        about_myself: Yup.string().required("Required"),
+        hometown: Yup.string()
+          .max(50, "Max of 50 characters")
+          .required("Required"),
+        present_location: Yup.string()
+          .max(100, "Max of 100 characters")
+          .required("Required"),
+        gender: Yup.string().max(10, "Max of 10 characters").notRequired(),
+        interests: Yup.string().max(200, "Max of 200 characters").notRequired(),
+        website: Yup.string()
+          .url()
+          .max(50, "Max of 50 characters")
+          .notRequired(),
+      }),
+      onSubmit: async (values) => {
+        await store.accountsStore.createUser(values);
+        resetForm();
+        navigate("/login");
+      },
+    });
 
   return (
     <form className="flex flex-col" onSubmit={handleSubmit}>
