@@ -7,4 +7,5 @@ export default class Post extends Model({
   message: prop<string>(),
   pk: prop<number>(),
   date_created: prop<Date>(),
+  authorUsername: prop<string>(),
 }) {}

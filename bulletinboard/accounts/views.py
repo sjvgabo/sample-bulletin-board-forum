@@ -4,12 +4,16 @@ from rest_framework import permissions, status, viewsets, mixins
 from rest_framework.authentication import BasicAuthentication
 from rest_framework.authtoken.serializers import AuthTokenSerializer
 from rest_framework.response import Response
+from rest_framework.decorators import action
+
 from rest_framework.views import APIView
 from bulletinboard.accounts.permissions import IsOtherUserOrReadOnly, IsUserOrReadOnly
+from bulletinboard.contents.models import Post
 from bulletinboard.contents.permissions import (
     IsAdministratorOrReadOnly,
     IsModeratorOrAdministratorOrReadOnly,
 )
+from bulletinboard.contents.serializers import PostSerializer
 
 from .serializers import BanUserSerializer, SignUpSerializer, UserSerializer
 from .models import User
@@ -72,6 +76,16 @@ class UserViewSet(
     permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsUserOrReadOnly]
     serializer_class = UserSerializer
 
+    @action(detail=True)
+    def posts(self, request, pk=None):
+        """
+        Returns paginated threads under the board (Default: 20 items)
+        """
+        user = self.get_object()
+        posts = Post.objects.filter(author=user).order_by('-date_created')
+        paginated_posts = self.paginate_queryset(posts)
+        user_posts_json = PostSerializer(paginated_posts, many=True)
+        return Response(user_posts_json.data)
 
 class BanUserViewSet(
     viewsets.GenericViewSet,

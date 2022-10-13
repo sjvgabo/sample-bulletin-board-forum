@@ -3,7 +3,6 @@ import { observer } from "mobx-react-lite";
 import React from "react";
 import * as Yup from "yup";
 import User from "../models/User";
-import { useStore } from "../stores";
 
 type Props = {
   user: User;
@@ -12,8 +11,6 @@ type Props = {
 };
 
 const ProfileForm: React.FC<Props> = ({ user, handleEdit }) => {
-  const store = useStore();
-
   const handleCancel = () => {
     handleEdit(false);
   };
@@ -37,23 +34,23 @@ const ProfileForm: React.FC<Props> = ({ user, handleEdit }) => {
       present_location: Yup.string()
         .max(100, "Max of 100 characters")
         .required("Required"),
-      gender: Yup.string().min(10, "Max of 10 characters").notRequired(),
-      interests: Yup.string().min(200, "Max of 200 characters").notRequired(),
+      gender: Yup.string().max(10, "Max of 10 characters").notRequired(),
+      interests: Yup.string().max(200, "Max of 200 characters").notRequired(),
       website: Yup.string().url().max(50, "Max of 50 characters").notRequired(),
     }),
     onSubmit: async (values) => {
-      // await store.accountsStore.createUser(values);
-      alert(values.toString());
+      await user.partialUpdateUser(values);
       handleEdit(false);
     },
   });
 
   return (
-    <form className="flex flex-col" onSubmit={handleSubmit}>
-      <div className="flex my-1">
-        <label htmlFor="about_myself">About myself:</label>
-        <input
-          type="text"
+    <form className="flex flex-col px-5" onSubmit={handleSubmit}>
+      <div className="flex my-1.5">
+        <label className="pr-2" htmlFor="about_myself">
+          About myself:
+        </label>
+        <textarea
           id="about_myself"
           name="about_myself"
           onChange={handleChange}
@@ -64,8 +61,10 @@ const ProfileForm: React.FC<Props> = ({ user, handleEdit }) => {
       {touched.about_myself && errors.about_myself ? (
         <div className="text-red-600 text-sm">{errors.about_myself}</div>
       ) : null}
-      <div className="flex my-1">
-        <label htmlFor="date_of_birth">Birthdate:</label>
+      <div className="flex my-1.5">
+        <label className="pr-2" htmlFor="date_of_birth">
+          Birthdate:
+        </label>
         <input
           type="date"
           id="date_of_birth"
@@ -79,8 +78,10 @@ const ProfileForm: React.FC<Props> = ({ user, handleEdit }) => {
         <div className="text-red-600 text-sm">{errors.date_of_birth}</div>
       ) : null}
 
-      <div className="flex my-1">
-        <label htmlFor="hometown">Hometown:</label>
+      <div className="flex my-1.5">
+        <label className="pr-2" htmlFor="hometown">
+          Hometown:
+        </label>
         <input
           type="text"
           id="hometown"
@@ -93,8 +94,10 @@ const ProfileForm: React.FC<Props> = ({ user, handleEdit }) => {
       {touched.hometown && errors.hometown ? (
         <div className="text-red-600 text-sm">{errors.hometown}</div>
       ) : null}
-      <div className="flex my-1">
-        <label htmlFor="present_location">Present Location:</label>
+      <div className="flex my-1.5">
+        <label className="pr-2" htmlFor="present_location">
+          Present Location:
+        </label>
         <input
           type="text"
           id="present_location"
@@ -107,8 +110,10 @@ const ProfileForm: React.FC<Props> = ({ user, handleEdit }) => {
       {touched.present_location && errors.present_location ? (
         <div className="text-red-600 text-sm">{errors.present_location}</div>
       ) : null}
-      <div className="flex my-1">
-        <label htmlFor="gender">Gender(optional):</label>
+      <div className="flex my-1.5">
+        <label className="pr-2" htmlFor="gender">
+          Gender(optional):
+        </label>
         <input
           type="text"
           id="gender"
@@ -121,8 +126,10 @@ const ProfileForm: React.FC<Props> = ({ user, handleEdit }) => {
       {touched.gender && errors.gender ? (
         <div className="text-red-600 text-sm">{errors.gender}</div>
       ) : null}
-      <div className="flex my-1">
-        <label htmlFor="interests">Interests(optional):</label>
+      <div className="flex my-1.5">
+        <label className="pr-2" htmlFor="interests">
+          Interests(optional):
+        </label>
         <input
           type="text"
           id="interests"
@@ -135,8 +142,10 @@ const ProfileForm: React.FC<Props> = ({ user, handleEdit }) => {
       {touched.interests && errors.interests ? (
         <div className="text-red-600 text-sm">{errors.interests}</div>
       ) : null}
-      <div className="flex my-1">
-        <label htmlFor="website">Website(optional):</label>
+      <div className="flex my-1.5">
+        <label className="pr-2" htmlFor="website">
+          Website(optional):
+        </label>
         <input
           type="text"
           id="website"
@@ -149,18 +158,20 @@ const ProfileForm: React.FC<Props> = ({ user, handleEdit }) => {
       {touched.website && errors.website ? (
         <div className="text-red-600 text-sm">{errors.website}</div>
       ) : null}
-      <button
-        className="bg-slate-400 text-white px-2 py-1 rounded mt-1"
-        type="submit"
-      >
-        Confirm Edit
-      </button>
-      <button
-        className="bg-slate-400 text-white px-2 py-1 rounded mt-1"
-        onClick={handleCancel}
-      >
-        Cancel
-      </button>
+      <div className="flex justify-center gap-2">
+        <button
+          className="bg-slate-600 hover:bg-slate-400 text-white px-2 py-1 rounded mt-1"
+          type="submit"
+        >
+          Confirm Edit
+        </button>
+        <button
+          className="bg-red-600 hover:bg-red-400 text-white px-2 py-1 rounded mt-1"
+          onClick={handleCancel}
+        >
+          Cancel
+        </button>
+      </div>
     </form>
   );
 };

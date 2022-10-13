@@ -10,7 +10,7 @@ const ProfileDetails:React.FC<Props> = ({user}) => {
   return (
     <div className="flex flex-col">
       <div>
-        <span>Profile Details</span>
+        <span className="text-lg font-semibold">Profile Details</span>
       </div>
       <div>
         <span>About myself: {user.about_myself}</span>

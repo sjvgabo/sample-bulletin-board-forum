@@ -1,6 +1,9 @@
 import localforage from "localforage";
 import { Model, model, modelFlow, prop, _async, _await } from "mobx-keystone";
 import moment from "moment";
+import { useNavigate } from "react-router";
+import Post from "../models/Post";
+import { PostData } from "../models/Thread";
 import User from "../models/User";
 
 type RegistrationInput = {
@@ -47,11 +50,13 @@ type UserAPIData = {
 export default class AccountsStore extends Model({
   authenticated_user: prop<UserAPIData | undefined>(),
   currentUser: prop<User | undefined>(),
+  currentPosts: prop<Post[]>(() => []),
   authenticated: prop<boolean>(false).withSetter(),
   token: prop<string>(""),
 }) {
   @modelFlow
   createUser = _async(function* (this: AccountsStore, data: RegistrationInput) {
+    const navigate = useNavigate();
     const newUser = {
       ...data,
       date_of_birth: moment(new Date(data.date_of_birth)).format("YYYY-MM-DD"),
@@ -74,9 +79,10 @@ export default class AccountsStore extends Model({
 
     if (response.ok) {
       alert("Account successfully created");
-      return true;
+      navigate("/");
+      return;
     } else {
-      alert("Error in creating account.");
+      alert("Error in creating account. Recheck values submitted");
     }
   });
 
@@ -123,7 +129,6 @@ export default class AccountsStore extends Model({
       this.setAuthenticated(true);
       this.authenticated_user = data.user;
       this.token = data.key;
-      alert(this.token)
       return;
     } else {
       alert("Login failed. Wrong password / username");
@@ -154,11 +159,25 @@ export default class AccountsStore extends Model({
       return;
     }
 
-    if (typeof token === "string" && expiry && userData) {
-      this.setAuthenticated(true);
-      this.token = token;
-      this.authenticated_user = userData;
+    if (typeof token === "string" && typeof expiry === "string" && userData) {
+      if (new Date(expiry) > new Date()) {
+        // Token not expired
+        this.setAuthenticated(true);
+        this.token = token;
+        this.authenticated_user = userData;
+        return;
+      } else {
+        // Clear local forage if token is expired
+        try {
+          yield* _await(localforage.clear());
+        } catch (error) {
+          alert("Error clearing localforage");
+          console.log(error);
+          return;
+        }
+      }
     } else {
+      // If there is no data in the localforage
       return;
     }
   });
@@ -167,7 +186,6 @@ export default class AccountsStore extends Model({
   logOutUser = _async(function* (this: AccountsStore) {
     // Log user out of api
     let response: Response;
-    console.log("TOKEN:", this.token);
     try {
       response = yield* _await(
         fetch(`${process.env.REACT_APP_API_BASE_LINK}/auth/logout/`, {
@@ -184,8 +202,7 @@ export default class AccountsStore extends Model({
     }
 
     if (!response.ok) {
-      alert(response.status);
-      return;
+      alert(`${response.status} Response error. Token invalid.`);
     }
 
     // Clear local forage
@@ -194,29 +211,68 @@ export default class AccountsStore extends Model({
     } catch (error) {
       alert("Error clearing localforage");
       console.log(error);
+    } finally {
+      this.setAuthenticated(false);
+      this.authenticated_user = undefined;
+      this.token = "";
       return;
     }
-
-    this.setAuthenticated(false);
-    this.authenticated_user = undefined;
-    this.token = "";
   });
 
   @modelFlow
   fetchUser = _async(function* (this: AccountsStore, userPk: number) {
     let response: Response;
-    let data: [];
     try {
-      response = yield* _await(fetch(`${process.env.REACT_APP_API_BASE_LINK}/auth/users/${userPk}`))
+      response = yield* _await(
+        fetch(`${process.env.REACT_APP_API_BASE_LINK}/auth/users/${userPk}`)
+      );
       if (response.ok) {
         let data: UserAPIData;
         data = yield* _await(response.json());
         this.currentUser = new User({
-          ...data
-      })
+          ...data,
+        });
       }
-    } catch (error) {
+    } catch (error) {}
+  });
 
+  @modelFlow
+  fetchPosts = _async(function* (
+    this: AccountsStore,
+    userPk: number,
+    pageNumber: number = 1
+  ) {
+    console.log("fetching posts");
+
+    let response: Response;
+    try {
+      response = yield* _await(
+        fetch(
+          `${process.env.REACT_APP_API_BASE_LINK}/auth/users/${userPk}/posts?page=${pageNumber}`
+        )
+      );
+    } catch (error) {
+      console.error(error);
+      return;
     }
-  })
+
+    let data: any = [];
+    try {
+      data = yield* _await(response.json());
+    } catch (error) {
+      console.error(error);
+      return;
+    }
+    this.currentPosts = data.map(
+      (post: PostData) =>
+        new Post({
+          authorPk: post.author,
+          pk: post.pk,
+          threadPk: post.thread,
+          message: post.message,
+          date_created: post.date_created,
+          authorUsername: post.author_username,
+        })
+    );
+  });
 }

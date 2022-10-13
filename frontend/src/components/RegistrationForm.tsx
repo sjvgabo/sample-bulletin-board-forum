@@ -40,8 +40,8 @@ const RegistrationForm: React.FC = () => {
       present_location: Yup.string()
         .max(100, "Max of 100 characters")
         .required("Required"),
-      gender: Yup.string().min(10, "Max of 10 characters").notRequired(),
-      interests: Yup.string().min(200, "Max of 200 characters").notRequired(),
+      gender: Yup.string().max(10, "Max of 10 characters").notRequired(),
+      interests: Yup.string().max(200, "Max of 200 characters").notRequired(),
       website: Yup.string().url().max(50, "Max of 50 characters").notRequired(),
     }),
     onSubmit: async (values) => {

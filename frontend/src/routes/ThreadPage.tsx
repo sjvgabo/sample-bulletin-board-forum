@@ -1,7 +1,10 @@
 import { observer } from "mobx-react-lite";
 import React, { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import DeleteButton from "../components/DeleteButton";
+import Divider from "../components/Divider";
 import { Loading } from "../components/Loading";
+import LockThreadButton from "../components/LockThreadButton";
 import PostCard from "../components/PostCard";
 import PostForm from "../components/PostForm";
 import Board from "../models/Board";
@@ -11,7 +14,13 @@ import ErrorPage from "./ErrorPage";
 
 const ThreadPage: React.FC = () => {
   const store = useStore();
-  const isAunthenticateed = store.accountsStore.authenticated;
+  const navigate = useNavigate();
+  const isAunthenticated = store.accountsStore.authenticated;
+  const userNotBanned = !store.accountsStore.authenticated_user?.is_banned;
+  const userModOrAdmin =
+    store.accountsStore.authenticated_user?.is_administrator ||
+    store.accountsStore.authenticated_user?.is_moderator;
+
   let params: { boardPk: string; topicPk: string; threadPk: string };
   params = useParams() as {
     boardPk: string;
@@ -35,13 +44,23 @@ const ThreadPage: React.FC = () => {
 
       setThread(newThread);
       await newThread?.fetchPosts(pageNumber);
-
       setLoading(false);
     })();
   }, [pageNumber, params.boardPk, params.threadPk, store.contentStore]);
 
   if (loading) {
     return <Loading />;
+  }
+
+  const handleLockClick = async () => {
+    thread?.toggleLockThread(store.token);
+  };
+
+  const handleThreadDelete = async () => {
+    if (thread && board) {
+      await board?.deleteThread(thread.pk, store.token);
+      navigate("/");
+    } 
   }
 
   return (
@@ -53,13 +72,20 @@ const ThreadPage: React.FC = () => {
           <Link to={`/topic/${params.topicPk}/board/${params.boardPk}`}>
             <span>{board.name}</span>
           </Link>
-          <h1 className="text-2xl font-bold mb-10 pb-2 border-b-2">
-            {thread?.title}
-          </h1>
-
+          <h1 className="text-2xl font-bold mb-10 pb-2">{thread?.title}</h1>
+          {userModOrAdmin && isAunthenticated && (
+            <>
+              <LockThreadButton
+                handleLockClick={handleLockClick}
+                locked={thread.isLocked}
+              />
+              <DeleteButton handleDelete={handleThreadDelete} />
+            </>
+          )}
+          <Divider />
           {/* Post list arranged according to post date descending */}
           {thread.posts.length > 0 ? (
-            <div>
+            <div className="ml-5">
               {thread.posts.map((post) => (
                 <PostCard
                   key={post.pk}
@@ -67,6 +93,8 @@ const ThreadPage: React.FC = () => {
                   message={post.message}
                   date={post.date_created}
                   postPk={post.pk}
+                  authorUsername={post.authorUsername}
+                  thread={thread}
                 />
               ))}
             </div>
@@ -76,9 +104,17 @@ const ThreadPage: React.FC = () => {
 
           {/* Reply component */}
           <div>
-            {(!thread.isLocked && isAunthenticateed) &&  <PostForm threadPk={parseInt(params.threadPk)} />}
+            {!thread.isLocked && isAunthenticated && userNotBanned && (
+              <PostForm
+                threadPk={parseInt(params.threadPk)}
+                thread={thread}
+                token={store.token}
+              />
+            )}
+            {!userNotBanned && isAunthenticated && (
+              <span>Banned user detected. You cannot post in this thread.</span>
+            )}
           </div>
-
         </div>
       ) : (
         <ErrorPage />

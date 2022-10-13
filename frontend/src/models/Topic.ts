@@ -1,4 +1,5 @@
 import { Model, model, modelFlow, prop, _async, _await } from "mobx-keystone";
+import { tokenCtx } from "../stores/store";
 import Board from "./Board";
 
 export type BoardData = {
@@ -60,4 +61,71 @@ export default class Topic extends Model({
   onInit() {
     this.fetchBoards();
   }
+
+  @modelFlow
+  deleteBoard = _async(function* (this: Topic, boardPk: number) {
+    const token = tokenCtx.get(this);
+    let response: Response;
+    try {
+      response = yield* _await(
+        fetch(
+          `${process.env.REACT_APP_API_BASE_LINK}/content/board/${boardPk}/`,
+          {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Token ${token}`,
+            },
+          }
+        )
+      );
+    } catch (error) {
+      alert("Error in deleting the Board");
+      return;
+    }
+
+    if (response.ok) {
+      alert("Board deleted");
+      yield* _await(this.fetchBoards());
+    } else {
+      alert("Error in deleting board. Check authentication.");
+    }
+  });
+
+  @modelFlow
+  createBoard = _async(function* (
+    this: Topic,
+    name: string,
+    description: string,
+  ) {
+    const token = tokenCtx.get(this);
+    let response: Response;
+    try {
+      response = yield* _await(
+        fetch(`${process.env.REACT_APP_API_BASE_LINK}/content/board/`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Token ${token}`,
+          },
+          body: JSON.stringify({
+            name: name,
+            description: description,
+            topic: this.pk,
+          }),
+        })
+      );
+    } catch (error) {
+      alert("Error creating new board");
+      return;
+    }
+
+    if (response.ok) {
+      alert("Succesfully created board");
+      yield* _await(this.fetchBoards());
+    } else {
+      alert("Error in database. Failed to created new board.");
+      return;
+    }
+  });
 }

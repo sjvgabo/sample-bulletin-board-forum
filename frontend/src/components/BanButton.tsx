@@ -2,12 +2,11 @@ import { observer } from "mobx-react-lite";
 import React from "react";
 
 type Props = {
-  handleClick: (userPk: number) => void;
-  userPk: number;
+  handleClick: () => void;
 }
-const BanButton: React.FC<Props> = ({handleClick, userPk}) => {
+const BanButton: React.FC<Props> = ({handleClick}) => {
   const handleButton = () => {
-    handleClick(userPk)
+    handleClick()
   }
   return (
     <div>

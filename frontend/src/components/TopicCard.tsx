@@ -13,11 +13,16 @@ const TopicCard: React.FC<Props> = ({ topic }) => {
   const store = useStore();
   const user = store.accountsStore.authenticated_user;
 
+  const handleCreateBoard = async (name: string, description: string) => {
+    await topic.createBoard(name, description);
+  };
   return (
     <div className="flex flex-col bg-white p-5 border-b-2 mx-10 mb-5 rounded-md">
       <div>
         <span className="text-xl text-gray-800">{topic.name}</span>
-        {user?.is_administrator && <BoardForm topicPk={topic.pk} />}
+        {user?.is_administrator && (
+          <BoardForm handleCreateBoard={handleCreateBoard} />
+        )}
       </div>
       <div className="flex flex-wrap">
         {boards.map((board: Board) => (
