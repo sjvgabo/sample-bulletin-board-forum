@@ -123,6 +123,7 @@ export default class Topic extends Model({
     if (response.ok) {
       alert("Succesfully created board");
       yield* _await(this.fetchBoards());
+
     } else {
       alert("Error in database. Failed to created new board.");
       return;

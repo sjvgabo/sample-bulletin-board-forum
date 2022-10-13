@@ -43,6 +43,7 @@ type UserAPIData = {
   is_moderator: boolean;
   is_administrator: boolean;
   is_banned: boolean;
+  user_posts: number[];
 };
 
 // Handles authentication and user management
@@ -230,7 +231,7 @@ export default class AccountsStore extends Model({
         let data: UserAPIData;
         data = yield* _await(response.json());
         this.currentUser = new User({
-          ...data,
+          ...data
         });
       }
     } catch (error) {}

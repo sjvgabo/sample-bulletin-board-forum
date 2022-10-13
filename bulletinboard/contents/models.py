@@ -25,6 +25,13 @@ class Board(models.Model):
         self.no_of_threads = Thread.objects.filter(board__pk=self.pk).count()
         self.save()
 
+    def update_no_of_posts(self):
+        number_of_posts = sum(
+            thread.no_of_posts for thread in Thread.objects.filter(board__pk=self.pk)
+        )
+        self.no_of_posts = number_of_posts
+        self.save()
+
 
 class Thread(models.Model):
     title = models.CharField(max_length=50)
@@ -54,6 +61,13 @@ class Thread(models.Model):
     def save(self, *args, **kwargs):
         self.author_username = self.author.username
         super().save(*args, **kwargs)
+        board = Board.objects.get(pk=self.board.pk)
+        board.update_no_of_threads()
+
+    def delete(self, *args, **kwargs):
+        super(Thread, self).delete(*args, **kwargs)
+        board = Board.objects.get(pk=self.board.pk)
+        board.update_no_of_threads()
 
     def update_no_of_posts(self):
         self.no_of_posts = Post.objects.filter(thread__pk=self.pk).count()
@@ -61,7 +75,9 @@ class Thread(models.Model):
 
 
 class Post(models.Model):
-    author = models.ForeignKey(User, related_name="posts", on_delete=models.CASCADE)
+    author = models.ForeignKey(
+        User, related_name="user_posts", on_delete=models.CASCADE
+    )
     thread = models.ForeignKey(Thread, related_name="posts", on_delete=models.CASCADE)
     message = models.TextField(max_length=500)
     date_created = models.DateField(auto_now_add=True, editable=False)
@@ -80,9 +96,13 @@ class Post(models.Model):
         self.author_username = self.author.username
         super().save(*args, **kwargs)
         thread = Thread.objects.get(pk=self.thread.pk)
+        board = Board.objects.get(pk=thread.board.pk)
         thread.update_no_of_posts()
+        board.update_no_of_posts()
 
     def delete(self, *args, **kwargs):
         super(Post, self).delete(*args, **kwargs)
         thread = Thread.objects.get(pk=self.thread.pk)
+        board = Board.objects.get(pk=thread.board.pk)
         thread.update_no_of_posts()
+        board.update_no_of_posts()

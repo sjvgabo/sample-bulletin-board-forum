@@ -30,6 +30,7 @@ export default class User extends Model({
   is_moderator: prop<boolean>(),
   is_administrator: prop<boolean>(),
   is_banned: prop<boolean>(),
+  user_posts: prop<number[]>(),
   posts: prop<Post[]>(() => []),
 }) {
   @modelFlow

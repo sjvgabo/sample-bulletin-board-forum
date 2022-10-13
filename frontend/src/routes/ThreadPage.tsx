@@ -32,6 +32,8 @@ const ThreadPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [thread, setThread] = useState<Thread>();
   const [pageNumber, setPageNumber] = useState<number>(1);
+  const [pageCount, setPageCount] = useState<number>(1);
+  const itemPerPage = 20;
 
   useEffect(() => {
     (async () => {
@@ -45,6 +47,7 @@ const ThreadPage: React.FC = () => {
 
       setThread(newThread);
       await newThread?.fetchPosts(pageNumber);
+      setPageCount(Math.ceil(newThread.noOfPosts / itemPerPage));
       setLoading(false);
     })();
   }, [pageNumber, params.boardPk, params.threadPk, store.contentStore]);
@@ -61,12 +64,12 @@ const ThreadPage: React.FC = () => {
     if (thread && board) {
       await board?.deleteThread(thread.pk, store.token);
       navigate("/");
-    } 
-  }
+    }
+  };
 
-  const handlePageClick = () => {
-
-  }
+  const handlePageClick = (selectedItem: { selected: number }): void => {
+    setPageNumber(selectedItem.selected + 1);
+  };
 
   return (
     <div className="bg-slate-200 min-h-full h-auto p-10">
@@ -108,12 +111,14 @@ const ThreadPage: React.FC = () => {
           )}
 
           {/* Pagination */}
-          <ReactPaginate 
-            nextLabel=">"
-            previousLabel="<"
-            pageCount={pageNumber}
-            
+          <div className="flex">
+          <ReactPaginate
+            nextLabel="Next >"
+            previousLabel="< Prev"
+            pageCount={pageCount}
+            onPageChange={handlePageClick}
           />
+          </div>
 
           {/* Reply component */}
           <div>

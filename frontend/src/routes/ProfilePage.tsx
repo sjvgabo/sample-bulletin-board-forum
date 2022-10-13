@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import ReactPaginate from "react-paginate";
 import { useParams } from "react-router-dom";
 import BanButton from "../components/BanButton";
 import Divider from "../components/Divider";
@@ -18,7 +19,9 @@ const ProfilePage: React.FC = () => {
   const [edit, setEdit] = useState(false);
   const [user, setUser] = useState<User>();
   const [loading, setLoading] = useState(true);
-  const [pageNumber, setPageNumber] = useState(1);
+  const [pageNumber, setPageNumber] = useState<number>(1);
+  const defaultPageItems = 20;
+  const [pageCount, setPageCount] = useState<number>(1);
 
   useEffect(() => {
     setIsOwnProfile(
@@ -28,15 +31,12 @@ const ProfilePage: React.FC = () => {
       await store.accountsStore.fetchUser(parseInt(params.userPk));
       await store.accountsStore.fetchPosts(parseInt(params.userPk), pageNumber);
       setUser(store.accountsStore.currentUser);
+      if (user) {
+        setPageCount(Math.ceil(user?.user_posts.length / defaultPageItems));
+      }
       setLoading(false);
     })();
-  }, [
-    params.userPk,
-    store.accountsStore.authenticated_user?.pk,
-    edit,
-    store.accountsStore,
-    pageNumber,
-  ]);
+  }, [params.userPk, store.accountsStore.authenticated_user?.pk, edit, store.accountsStore, pageNumber, user]);
 
   const handleEditButton = () => {
     setEdit(true);
@@ -50,10 +50,14 @@ const ProfilePage: React.FC = () => {
     await user?.banUser();
   };
 
+  const handlePageClick = (selectedItem: { selected: number }): void => {
+    setPageNumber(selectedItem.selected + 1);
+  };
+
   if (loading) <Loading />;
   if (user) {
     return (
-      <div className="bg-slate-200 h-full p-10">
+      <div className="bg-slate-200 h-auto min-h-full p-10">
         <div className="bg-white py-5 px-5">
           <div className="text-2xl text-gray-800 font-semibold">
             {user.username} {user.is_banned && "(BANNED)"}
@@ -100,6 +104,12 @@ const ProfilePage: React.FC = () => {
             ) : (
               <div>No posts yet</div>
             )}
+            <ReactPaginate
+              nextLabel="Next >"
+              previousLabel="< Prev"
+              pageCount={pageCount}
+              onPageChange={handlePageClick}
+            />
           </div>
         </div>
       </div>

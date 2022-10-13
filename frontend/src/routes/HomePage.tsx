@@ -9,7 +9,7 @@ const HomePage: React.FC = () => {
   const topics = store.contentStore.topics;
 
   return (
-    <div className="min-h-full h-screen bg-slate-200 pt-10">
+    <div className="h-auto min-h-full bg-slate-200 pt-10">
       <div className="">
         <div className="">
           {topics.map((topic: Topic) => (

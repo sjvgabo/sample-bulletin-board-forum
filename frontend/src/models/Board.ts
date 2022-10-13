@@ -16,10 +16,10 @@ export type ThreadData = {
 
 @model("bulletinboard/Board")
 export default class Board extends Model({
-  topic_pk: prop<number>(),
+  topic_pk: prop<number>().withSetter(),
   name: prop<string>(),
   description: prop<string>(),
-  no_of_threads: prop<number>(0),
+  no_of_threads: prop<number>(0).withSetter(),
   no_of_posts: prop<number>(0),
   pk: prop<number>(),
   threads: prop<Thread[]>(() => []),
@@ -134,8 +134,46 @@ export default class Board extends Model({
 
     if (response.ok) {
       alert("Thread deleted");
+      yield* _await(this.fetchThreads());
     } else {
       alert("Thread failed to be deleted. Check authorization.");
+    }
+  });
+
+  @modelFlow
+  changeTopic = _async(function* (this: Board, token: string, topicPk: number) {
+    if (topicPk === this.pk) {
+      alert("Same value detected. Please select a different topic.");
+      return;
+    }
+    const topicData = {
+      topic: topicPk,
+    };
+    let response: Response;
+    try {
+      response = yield* _await(
+        fetch(
+          `${process.env.REACT_APP_API_BASE_LINK}/content/board/${this.pk}/`,
+          {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Token ${token}`,
+            },
+            body: JSON.stringify(topicData),
+          }
+        )
+      );
+    } catch (error) {
+      alert("Update Error: Error in database.");
+      return;
+    }
+
+    if (response.ok) {
+      this.setTopic_pk(topicPk);
+      alert("Successfully moved the board.");
+    } else {
+      alert("Error in changing the board topic.");
     }
   });
 }

@@ -28,10 +28,8 @@ const TopicCard: React.FC<Props> = ({ topic }) => {
         {boards.map((board: Board) => (
           <BoardCard
             key={board.pk}
-            name={board.name}
             topicPk={topic.pk}
-            boardPk={board.pk}
-            description={board.description}
+            board={board}
           />
         ))}
       </div>
