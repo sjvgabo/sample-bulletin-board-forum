@@ -1,7 +1,11 @@
 import React from "react";
+import { useNavigate } from "react-router";
 import RegistrationForm from "../components/RegistrationForm";
 
 const RegistrationPage: React.FC = () => {
+  const navigate = useNavigate();
+  const handleNavigate = () => navigate("/login");
+
   return (
     <div className="bg-slate-200 p-10 h-auto min-h-full flex justify-center">
       <div className="bg-white w-1/2 p-5 rounded flex flex-col items-center">
@@ -11,7 +15,7 @@ const RegistrationPage: React.FC = () => {
           </span>
         </div>
         <div>
-          <RegistrationForm />
+          <RegistrationForm handleNavigate={handleNavigate} />
         </div>
       </div>
     </div>

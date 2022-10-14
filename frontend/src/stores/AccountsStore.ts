@@ -1,7 +1,6 @@
 import localforage from "localforage";
 import { Model, model, modelFlow, prop, _async, _await } from "mobx-keystone";
 import moment from "moment";
-import { useNavigate } from "react-router";
 import Post from "../models/Post";
 import { PostData } from "../models/Thread";
 import User from "../models/User";
@@ -57,7 +56,6 @@ export default class AccountsStore extends Model({
 }) {
   @modelFlow
   createUser = _async(function* (this: AccountsStore, data: RegistrationInput) {
-    const navigate = useNavigate();
     const newUser = {
       ...data,
       date_of_birth: moment(new Date(data.date_of_birth)).format("YYYY-MM-DD"),
@@ -80,7 +78,6 @@ export default class AccountsStore extends Model({
 
     if (response.ok) {
       alert("Account successfully created");
-      navigate("/");
       return;
     } else {
       alert("Error in creating account. Recheck values submitted");

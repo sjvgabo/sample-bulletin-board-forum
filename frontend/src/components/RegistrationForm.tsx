@@ -1,13 +1,14 @@
 import { useFormik } from "formik";
 import { observer } from "mobx-react-lite";
 import React from "react";
-import { useNavigate } from "react-router";
 import * as Yup from "yup";
 import { useStore } from "../stores";
 
-const RegistrationForm: React.FC = () => {
+type Props = {
+  handleNavigate: () => void;
+}
+const RegistrationForm: React.FC<Props> = ({handleNavigate}) => {
   const store = useStore();
-  const navigate = useNavigate();
 
   const { handleSubmit, handleChange, values, touched, errors, resetForm } =
     useFormik({
@@ -53,7 +54,7 @@ const RegistrationForm: React.FC = () => {
       onSubmit: async (values) => {
         await store.accountsStore.createUser(values);
         resetForm();
-        navigate("/login");
+        handleNavigate();
       },
     });
 

@@ -7,12 +7,11 @@ import { useStore } from "../stores";
 const HomePage: React.FC = () => {
   const store = useStore();
   const topics = store.contentStore.topics;
-
   return (
     <div className="h-auto min-h-full bg-slate-200 pt-10">
       <div className="">
         <div className="">
-          {topics.map((topic: Topic) => (
+          {topics && topics.map((topic: Topic) => (
             <TopicCard key={topic.pk} topic={topic} />
           ))}
         </div>
