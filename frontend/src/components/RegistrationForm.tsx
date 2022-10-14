@@ -6,8 +6,8 @@ import { useStore } from "../stores";
 
 type Props = {
   handleNavigate: () => void;
-}
-const RegistrationForm: React.FC<Props> = ({handleNavigate}) => {
+};
+const RegistrationForm: React.FC<Props> = ({ handleNavigate }) => {
   const store = useStore();
 
   const { handleSubmit, handleChange, values, touched, errors, resetForm } =
@@ -46,10 +46,7 @@ const RegistrationForm: React.FC<Props> = ({handleNavigate}) => {
           .required("Required"),
         gender: Yup.string().max(10, "Max of 10 characters").notRequired(),
         interests: Yup.string().max(200, "Max of 200 characters").notRequired(),
-        website: Yup.string()
-          .url()
-          .max(50, "Max of 50 characters")
-          .notRequired(),
+        website: Yup.string().max(50, "Max of 50 characters").notRequired(),
       }),
       onSubmit: async (values) => {
         await store.accountsStore.createUser(values);
@@ -146,8 +143,7 @@ const RegistrationForm: React.FC<Props> = ({handleNavigate}) => {
       ) : null}
       <div className="flex my-1">
         <label htmlFor="about_myself">About myself:</label>
-        <input
-          type="text"
+        <textarea
           id="about_myself"
           name="about_myself"
           onChange={handleChange}
@@ -202,8 +198,7 @@ const RegistrationForm: React.FC<Props> = ({handleNavigate}) => {
       ) : null}
       <div className="flex my-1">
         <label htmlFor="interests">Interests(optional):</label>
-        <input
-          type="text"
+        <textarea
           id="interests"
           name="interests"
           onChange={handleChange}

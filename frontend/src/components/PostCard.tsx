@@ -13,6 +13,7 @@ type Props = {
   postPk: number;
   authorUsername: string;
   thread?: Thread;
+  authorAvatarURL: string | undefined;
 };
 
 const PostCard: React.FC<Props> = ({
@@ -22,22 +23,21 @@ const PostCard: React.FC<Props> = ({
   postPk,
   authorUsername,
   thread,
+  authorAvatarURL,
 }) => {
   const store = useStore();
   const userPk = store.accountsStore.authenticated_user?.pk;
 
   const handleDelete = async () => {
     if (thread) {
-      await thread.deletePost(postPk, store.token);
+      await thread.deletePost(postPk, store.accountsStore.token);
     }
   };
 
   return (
     <div className="flex gap-5 my-7">
       {/* User Avatar */}
-      <div>
-        <Avatar />
-      </div>
+      <Avatar link={authorAvatarURL} />
 
       {/* Post Info */}
       <div className="flex flex-col">

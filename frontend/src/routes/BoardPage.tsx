@@ -22,7 +22,10 @@ const BoardPage: React.FC = () => {
   const [pageCount, setPageCount] = useState<number>(1);
 
   const handleDelete = async () => {
-    await topic?.deleteBoard(parseInt(params.boardPk), store.accountsStore.token);
+    await topic?.deleteBoard(
+      parseInt(params.boardPk),
+      store.accountsStore.token
+    );
     navigate("/");
   };
 
@@ -33,8 +36,7 @@ const BoardPage: React.FC = () => {
   const handleChangeTopic = async (topicPk: number) => {
     if (board && topic) {
       await board?.changeTopic(store.accountsStore.token, topicPk);
-      await topic.fetchBoards();
-      
+      await store.contentStore.fetchTopics();
     }
   };
 
@@ -63,7 +65,7 @@ const BoardPage: React.FC = () => {
               </button>
               <EditBoardTopicForm
                 handleChangeTopic={handleChangeTopic}
-                boardPk={board.pk}
+                topicPk={board.topic_pk}
               />
             </>
           )}

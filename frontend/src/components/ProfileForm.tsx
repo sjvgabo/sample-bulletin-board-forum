@@ -3,6 +3,7 @@ import { observer } from "mobx-react-lite";
 import React from "react";
 import * as Yup from "yup";
 import User from "../models/User";
+import { useStore } from "../stores";
 
 type Props = {
   user: User;
@@ -11,38 +12,41 @@ type Props = {
 };
 
 const ProfileForm: React.FC<Props> = ({ user, handleEdit }) => {
+  const store = useStore();
   const handleCancel = () => {
     handleEdit(false);
   };
 
-  const { handleSubmit, handleChange, values, touched, errors } = useFormik({
-    initialValues: {
-      date_of_birth: user.date_of_birth.toString(),
-      about_myself: user.about_myself,
-      hometown: user.hometown,
-      present_location: user.present_location,
-      gender: user.gender,
-      interests: user.interests,
-      website: user.website,
-    },
-    validationSchema: Yup.object({
-      date_of_birth: Yup.string().required("Required"),
-      about_myself: Yup.string().required("Required"),
-      hometown: Yup.string()
-        .max(50, "Max of 50 characters")
-        .required("Required"),
-      present_location: Yup.string()
-        .max(100, "Max of 100 characters")
-        .required("Required"),
-      gender: Yup.string().max(10, "Max of 10 characters").notRequired(),
-      interests: Yup.string().max(200, "Max of 200 characters").notRequired(),
-      website: Yup.string().url().max(50, "Max of 50 characters").notRequired(),
-    }),
-    onSubmit: async (values) => {
-      await user.partialUpdateUser(values);
-      handleEdit(false);
-    },
-  });
+  const { handleSubmit, handleChange, values, touched, errors, resetForm } =
+    useFormik({
+      initialValues: {
+        date_of_birth: user.date_of_birth.toString(),
+        about_myself: user.about_myself,
+        hometown: user.hometown,
+        present_location: user.present_location,
+        gender: user.gender,
+        interests: user.interests,
+        website: user.website,
+      },
+      validationSchema: Yup.object({
+        date_of_birth: Yup.string().required("Required"),
+        about_myself: Yup.string().required("Required"),
+        hometown: Yup.string()
+          .max(50, "Max of 50 characters")
+          .required("Required"),
+        present_location: Yup.string()
+          .max(100, "Max of 100 characters")
+          .required("Required"),
+        gender: Yup.string().max(10, "Max of 10 characters").notRequired(),
+        interests: Yup.string().max(200, "Max of 200 characters").notRequired(),
+        website: Yup.string().max(50, "Max of 50 characters").notRequired(),
+      }),
+      onSubmit: async (values) => {
+        await user.partialUpdateUser(values, store.accountsStore.token);
+        resetForm();
+        handleEdit(false);
+      },
+    });
 
   return (
     <form className="flex flex-col px-5" onSubmit={handleSubmit}>
@@ -130,8 +134,7 @@ const ProfileForm: React.FC<Props> = ({ user, handleEdit }) => {
         <label className="pr-2" htmlFor="interests">
           Interests(optional):
         </label>
-        <input
-          type="text"
+        <textarea
           id="interests"
           name="interests"
           onChange={handleChange}

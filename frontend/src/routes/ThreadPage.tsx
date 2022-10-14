@@ -52,17 +52,13 @@ const ThreadPage: React.FC = () => {
     })();
   }, [pageNumber, params.boardPk, params.threadPk, store.contentStore]);
 
-  if (loading) {
-    return <Loading />;
-  }
-
   const handleLockClick = async () => {
     thread?.toggleLockThread(store.token);
   };
 
   const handleThreadDelete = async () => {
     if (thread && board) {
-      await board?.deleteThread(thread.pk, store.token);
+      await board?.deleteThread(thread.pk, store.accountsStore.token);
       navigate(`/topic/${params.topicPk}/board/${params.boardPk}/`);
     }
   };
@@ -71,6 +67,9 @@ const ThreadPage: React.FC = () => {
     setPageNumber(selectedItem.selected + 1);
   };
 
+  if (loading) {
+    return <Loading />;
+  }
   return (
     <div className="bg-slate-200 min-h-full h-auto p-10">
       {board && thread ? (
@@ -101,6 +100,7 @@ const ThreadPage: React.FC = () => {
                   date={post.date_created}
                   postPk={post.pk}
                   authorUsername={post.authorUsername}
+                  authorAvatarURL={post.authorAvatarURL}
                   thread={thread}
                 />
               ))}
@@ -118,7 +118,7 @@ const ThreadPage: React.FC = () => {
               <PostForm
                 threadPk={parseInt(params.threadPk)}
                 thread={thread}
-                token={store.token}
+                token={store.accountsStore.token}
               />
             )}
             {/* If user is banned, this shows instead of form */}

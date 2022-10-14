@@ -11,7 +11,7 @@ type UpdateProps = {
   gender?: string;
   interests?: string;
   website?: string;
-}
+};
 @model("bulletinboard/User")
 export default class User extends Model({
   pk: prop<number>(),
@@ -32,11 +32,14 @@ export default class User extends Model({
   is_banned: prop<boolean>(),
   user_posts: prop<number[]>(),
   posts: prop<Post[]>(() => []),
-  avatar_url: prop<string | null>(),
+  avatar_url: prop<string | undefined>(),
 }) {
   @modelFlow
-  partialUpdateUser = _async(function* (this: User, updateProps: UpdateProps) {
-    const token = tokenCtx.get(this);
+  partialUpdateUser = _async(function* (
+    this: User,
+    updateProps: UpdateProps,
+    token: string
+  ) {
     const updateUserData = {
       ...updateProps,
       date_of_birth: moment(new Date(updateProps.date_of_birth)).format(
@@ -76,14 +79,17 @@ export default class User extends Model({
     let response: Response;
     try {
       response = yield* _await(
-        fetch(`${process.env.REACT_APP_API_BASE_LINK}/auth/ban-user/${this.pk}/`, {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Token ${token}`,
-          },
-          body: JSON.stringify(banData),
-        })
+        fetch(
+          `${process.env.REACT_APP_API_BASE_LINK}/auth/ban-user/${this.pk}/`,
+          {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Token ${token}`,
+            },
+            body: JSON.stringify(banData),
+          }
+        )
       );
     } catch (error) {
       alert("Update Error: Error in database.");
@@ -96,5 +102,4 @@ export default class User extends Model({
       alert("Error in banning account.");
     }
   });
- 
 }

@@ -11,9 +11,10 @@ const HomePage: React.FC = () => {
     <div className="h-auto min-h-full bg-slate-200 pt-10">
       <div className="">
         <div className="">
-          {topics && topics.map((topic: Topic) => (
-            <TopicCard key={topic.pk} topic={topic} />
-          ))}
+          {topics &&
+            topics.map((topic: Topic) => (
+              <TopicCard key={topic.pk} topic={topic} />
+            ))}
         </div>
       </div>
     </div>

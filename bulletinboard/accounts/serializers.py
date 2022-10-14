@@ -98,7 +98,7 @@ class UserSerializer(BaseUserSerializer):
             "is_moderator",
             "is_administrator",
             "is_banned",
-            "avatar_url"
+            "avatar_url",
         ]
 
         read_only_fields = [

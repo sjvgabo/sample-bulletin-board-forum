@@ -26,11 +26,7 @@ const TopicCard: React.FC<Props> = ({ topic }) => {
       </div>
       <div className="flex flex-wrap">
         {boards.map((board: Board) => (
-          <BoardCard
-            key={board.pk}
-            topicPk={topic.pk}
-            board={board}
-          />
+          <BoardCard key={board.pk} topicPk={topic.pk} board={board} />
         ))}
       </div>
     </div>

@@ -4,9 +4,9 @@ import User from "../models/User";
 
 type Props = {
   user: User;
-}
+};
 
-const ProfileDetails:React.FC<Props> = ({user}) => {
+const ProfileDetails: React.FC<Props> = ({ user }) => {
   return (
     <div className="flex flex-col">
       <div>
@@ -35,6 +35,6 @@ const ProfileDetails:React.FC<Props> = ({user}) => {
       </div>
     </div>
   );
-}
+};
 
 export default observer(ProfileDetails);

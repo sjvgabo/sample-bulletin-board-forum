@@ -18,7 +18,7 @@ const UserNav: React.FC = () => {
     return (
       <div className="flex gap-5 items-center">
         <div>
-          <Avatar />
+          <Avatar link={user.avatar_url} />
         </div>
         <div>
           <div>

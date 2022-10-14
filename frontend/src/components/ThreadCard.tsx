@@ -40,9 +40,16 @@ const ThreadCard: React.FC<Props> = ({
           <span className="text-sm pl-2 text-gray-500">
             Created by: {authorUsername}
           </span>
-          <span className="text-sm pl-2 text-gray-500">
-            Last replied: <TimeSince date={lastReplied} /> by {lastRepliedUserName}
-          </span>
+          {lastRepliedUserName ? (
+            <span className="text-sm pl-2 text-gray-500">
+              Last replied: <TimeSince date={lastReplied} /> by{" "}
+              {lastRepliedUserName}
+            </span>
+          ) : (
+            <span className="text-sm pl-2 text-gray-500">
+              No post created yet
+            </span>
+          )}
         </div>
       </div>
     </Link>

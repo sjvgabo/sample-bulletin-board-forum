@@ -5,6 +5,7 @@ import Avatar from "../components/Avatar";
 import BanButton from "../components/BanButton";
 import Divider from "../components/Divider";
 import EditButton from "../components/EditButton";
+import ImageForm from "../components/ImageForm";
 import { Loading } from "../components/Loading";
 import Paginator from "../components/Paginator";
 import PostCard from "../components/PostCard";
@@ -25,6 +26,22 @@ const ProfilePage: React.FC = () => {
   const defaultPageItems = 20;
   const [pageCount, setPageCount] = useState<number>(1);
   const postLength = user?.user_posts.length || 0;
+
+  const handleEditButton = () => {
+    setEdit(true);
+  };
+
+  const handleConfirmOrCancel = (value: boolean) => {
+    setEdit(value);
+  };
+
+  const handleBanUser = async () => {
+    await user?.banUser();
+  };
+
+  const handlePageClick = (selectedItem: { selected: number }): void => {
+    setPageNumber(selectedItem.selected + 1);
+  };
 
   useEffect(() => {
     setIsOwnProfile(
@@ -49,22 +66,6 @@ const ProfilePage: React.FC = () => {
     postLength,
   ]);
 
-  const handleEditButton = () => {
-    setEdit(true);
-  };
-
-  const handleConfirmOrCancel = (value: boolean) => {
-    setEdit(value);
-  };
-
-  const handleBanUser = async () => {
-    await user?.banUser();
-  };
-
-  const handlePageClick = (selectedItem: { selected: number }): void => {
-    setPageNumber(selectedItem.selected + 1);
-  };
-
   if (loading) <Loading />;
   if (user) {
     return (
@@ -80,6 +81,7 @@ const ProfilePage: React.FC = () => {
                 {user.first_name} {user.last_name}
               </h2>
               {isOwnProfile && <EditButton handleClick={handleEditButton} />}
+              <ImageForm />
               {/* Checks the following so ban button shows up: 1. profile user is not
           banned 2. profile user is not the same as logged user 3. profile user
           is not an administrator 4. logged user is an administrator or a
@@ -93,7 +95,7 @@ const ProfilePage: React.FC = () => {
                   <BanButton handleClick={handleBanUser} />
                 )}
             </div>
-            <Avatar />
+            <Avatar link={user.avatar_url} />
           </div>
 
           <Divider />
@@ -116,6 +118,7 @@ const ProfilePage: React.FC = () => {
                     date={post.date_created}
                     postPk={post.pk}
                     authorUsername={post.authorUsername}
+                    authorAvatarURL={post.authorAvatarURL}
                   />
                 ))}
               </div>

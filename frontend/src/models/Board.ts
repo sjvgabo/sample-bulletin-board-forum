@@ -13,7 +13,6 @@ export type ThreadData = {
   author_username: string;
   last_replied: Date;
   last_replied_user: string;
-
 };
 
 @model("bulletinboard/Board")
@@ -29,7 +28,6 @@ export default class Board extends Model({
   // Fetches board threads from database
   @modelFlow
   fetchThreads = _async(function* (this: Board, pageNumber: number = 1) {
-    console.log("fetching threads");
     let response: Response;
     try {
       response = yield* _await(
@@ -38,7 +36,7 @@ export default class Board extends Model({
         )
       );
     } catch (error) {
-      console.error(error);
+      alert("Error in fetching data from database.")
       return;
     }
 
@@ -46,7 +44,7 @@ export default class Board extends Model({
     try {
       data = yield* _await(response.json());
     } catch (error) {
-      console.error(error);
+      alert("Error in parsing response data")
       return;
     }
 
@@ -80,7 +78,7 @@ export default class Board extends Model({
     this: Board,
     title: string,
     authorPk: number,
-    token: string,
+    token: string
   ) {
     let response: Response;
     try {
@@ -146,7 +144,7 @@ export default class Board extends Model({
 
   @modelFlow
   changeTopic = _async(function* (this: Board, token: string, topicPk: number) {
-    if (topicPk === this.pk) {
+    if (topicPk === this.topic_pk) {
       alert("Same value detected. Please select a different topic.");
       return;
     }
@@ -175,6 +173,7 @@ export default class Board extends Model({
 
     if (response.ok) {
       this.setTopic_pk(topicPk);
+
       alert("Successfully moved the board.");
     } else {
       alert("Error in changing the board topic.");

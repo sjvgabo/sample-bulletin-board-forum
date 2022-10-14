@@ -149,7 +149,7 @@ REST_KNOX = {"USER_SERIALIZER": "bulletinboard.accounts.serializers.UserSerializ
 CORS_ALLOWED_ORIGINS = env.list("DJANGO_CORS_ALLOWED_HOSTS")
 
 # Actual directory user files go to
-MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'mediafiles')
+MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), "mediafiles")
 
 # URL used to access the media
-MEDIA_URL = '/media/'
+MEDIA_URL = "/media/"

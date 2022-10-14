@@ -52,8 +52,11 @@ class Thread(models.Model):
     author_username = models.CharField(
         "Author username", max_length=150, blank=True, editable=False
     )
-    last_replied = models.DateTimeField(auto_now_add=True, blank=True, null=True, editable=False)
+    last_replied = models.DateTimeField(
+        auto_now_add=True, blank=True, null=True, editable=False
+    )
     last_replied_user = models.CharField(blank=True, max_length=150, editable=False)
+
     class Meta:
         ordering = ["-is_sticky", "-last_replied"]
 

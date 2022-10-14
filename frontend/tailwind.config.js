@@ -5,12 +5,11 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        'bb-background': '#94a3b8',
-        'primary': '#262626',
-        'secondary': '#334155',
-
-      }
+        "bb-background": "#94a3b8",
+        primary: "#262626",
+        secondary: "#334155",
+      },
     },
   },
   plugins: [],
-}
+};

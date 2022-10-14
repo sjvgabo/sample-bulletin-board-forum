@@ -8,24 +8,24 @@ import { useStore } from "../stores";
 
 type Props = {
   handleChangeTopic: (topicPk: number) => void;
-  boardPk: number;
+  topicPk: number;
 };
 const EditBoardTopicForm: React.FC<Props> = ({
   handleChangeTopic,
-  boardPk,
+  topicPk,
 }) => {
   const store = useStore();
   const navigate = useNavigate();
   const { handleSubmit, handleChange, values } = useFormik({
     initialValues: {
-      topic: boardPk,
+      topic: topicPk,
     },
     validationSchema: Yup.object({
       topic: Yup.number().required("Message must not be empty"),
     }),
     onSubmit: (values) => {
       handleChangeTopic(values.topic);
-      navigate("/")
+      navigate("/");
     },
   });
   return (
@@ -39,7 +39,7 @@ const EditBoardTopicForm: React.FC<Props> = ({
         </button>
         <select name="topic" value={values.topic} onChange={handleChange}>
           {store.contentStore.topics.map((topic: Topic) => (
-            <option key={topic.pk} className="border"  value={topic.pk}>
+            <option key={topic.pk} className="border" value={topic.pk}>
               {topic.name}
             </option>
           ))}

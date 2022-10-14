@@ -16,9 +16,7 @@ const BoardCard: React.FC<Props> = ({ topicPk, board }) => (
       <span className="text-sm text-gray-500">
         Threads: {board.no_of_threads}
       </span>
-      <span className="text-sm text-gray-500">
-        Posts: {board.no_of_posts}
-      </span>
+      <span className="text-sm text-gray-500">Posts: {board.no_of_posts}</span>
     </div>
   </Link>
 );

@@ -95,7 +95,7 @@ export default class Topic extends Model({
     this: Topic,
     name: string,
     description: string,
-    token: string,
+    token: string
   ) {
     let response: Response;
     try {
@@ -121,7 +121,6 @@ export default class Topic extends Model({
     if (response.ok) {
       alert("Succesfully created board");
       yield* _await(this.fetchBoards());
-
     } else {
       alert("Error in database. Failed to created new board.");
       return;

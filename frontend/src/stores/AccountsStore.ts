@@ -43,16 +43,17 @@ type UserAPIData = {
   is_administrator: boolean;
   is_banned: boolean;
   user_posts: number[];
-  avatar_url: string | null;
+  avatar_url: string | undefined;
 };
 
 // Handles authentication and user management
 @model("bulletin-board/AccountsStore")
 export default class AccountsStore extends Model({
-  authenticated_user: prop<UserAPIData | undefined>(),
+  authenticated_user: prop<UserAPIData | undefined>().withSetter(),
   currentUser: prop<User | undefined>(),
   currentPosts: prop<Post[]>(() => []),
   authenticated: prop<boolean>(false).withSetter(),
+  currentAvatar: prop<string | undefined>(),
   token: prop<string>(""),
 }) {
   @modelFlow
@@ -153,7 +154,7 @@ export default class AccountsStore extends Model({
         )
       );
     } catch (error) {
-      alert("Error in fetching tokens");
+      alert("Error in fetching local data");
       console.log(error);
       return;
     }
@@ -229,7 +230,7 @@ export default class AccountsStore extends Model({
         let data: UserAPIData;
         data = yield* _await(response.json());
         this.currentUser = new User({
-          ...data
+          ...data,
         });
       }
     } catch (error) {}
@@ -272,6 +273,49 @@ export default class AccountsStore extends Model({
           date_created: post.date_created,
           authorUsername: post.author_username,
         })
+    );
+  });
+
+  @modelFlow
+  uploadAvatar = _async(function* (this: AccountsStore, image: File) {
+    let data: FormData = new FormData();
+    data.append("avatar_url", image);
+    let response: Response;
+    try {
+      response = yield* _await(
+        fetch(
+          `${process.env.REACT_APP_API_BASE_LINK}/auth/users/${this.authenticated_user?.pk}/`,
+          {
+            method: "PATCH",
+            headers: {
+              Authorization: `Token ${this.token}`,
+            },
+            body: data,
+          }
+        )
+      );
+    } catch (error) {
+      alert("Update Error: Error in database.");
+      return;
+    }
+    console.log(image);
+    let responseData: any;
+    if (response.ok) {
+      alert("Avatar updated");
+    } else {
+      alert("Error in updating avatar. Recheck values submitted");
+    }
+    try {
+      responseData = yield* _await(response.json());
+    } catch (error) {
+      alert("Error parsing response data");
+    }
+    this.setAuthenticated_user(responseData);
+    yield* _await(
+      localforage.setItem(
+        process.env.REACT_APP_USER_INFO_KEY as string,
+        responseData
+      )
     );
   });
 }

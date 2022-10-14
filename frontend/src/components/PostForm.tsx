@@ -29,9 +29,8 @@ const PostForm: React.FC<Props> = ({ threadPk, thread, token }) => {
 
   return (
     <form className="flex flex-col" onSubmit={handleSubmit}>
-      <input
+      <textarea
         className="border-2 h-20 mb-2"
-        type="text"
         id="message"
         name="message"
         value={values.message}

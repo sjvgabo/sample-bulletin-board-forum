@@ -26,7 +26,6 @@ export default class Thread extends Model({
 }) {
   @modelFlow
   fetchPosts = _async(function* (this: Thread, pageNumber: number = 1) {
-    console.log("fetching posts");
 
     let response: Response;
     try {
@@ -36,7 +35,7 @@ export default class Thread extends Model({
         )
       );
     } catch (error) {
-      console.error(error);
+      alert("Error in fetching posts from the database")
       return;
     }
 
@@ -44,7 +43,7 @@ export default class Thread extends Model({
     try {
       data = yield* _await(response.json());
     } catch (error) {
-      console.error(error);
+      alert("Error in parsing response data")
       return;
     }
 
