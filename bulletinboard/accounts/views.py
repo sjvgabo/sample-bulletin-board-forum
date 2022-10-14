@@ -5,7 +5,7 @@ from rest_framework.authentication import BasicAuthentication
 from rest_framework.authtoken.serializers import AuthTokenSerializer
 from rest_framework.response import Response
 from rest_framework.decorators import action
-
+from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.views import APIView
 from bulletinboard.accounts.permissions import IsOtherUserOrReadOnly, IsUserOrReadOnly
 from bulletinboard.contents.models import Post
@@ -75,6 +75,7 @@ class UserViewSet(
     queryset = User.objects.all()
     permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsUserOrReadOnly]
     serializer_class = UserSerializer
+    parser_classes = (MultiPartParser, FormParser)
 
     @action(detail=True)
     def posts(self, request, pk=None):

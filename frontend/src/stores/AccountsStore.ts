@@ -43,6 +43,7 @@ type UserAPIData = {
   is_administrator: boolean;
   is_banned: boolean;
   user_posts: number[];
+  avatar_url: string | null;
 };
 
 // Handles authentication and user management

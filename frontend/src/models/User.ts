@@ -32,6 +32,7 @@ export default class User extends Model({
   is_banned: prop<boolean>(),
   user_posts: prop<number[]>(),
   posts: prop<Post[]>(() => []),
+  avatar_url: prop<string | null>(),
 }) {
   @modelFlow
   partialUpdateUser = _async(function* (this: User, updateProps: UpdateProps) {
@@ -95,4 +96,5 @@ export default class User extends Model({
       alert("Error in banning account.");
     }
   });
+ 
 }

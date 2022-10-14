@@ -2,6 +2,8 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 
+def upload_to(instance, filename):
+    return 'images/{filename}'.format(filename=filename)
 class User(AbstractUser):
     first_name = models.CharField(
         "First name",
@@ -30,6 +32,7 @@ class User(AbstractUser):
     is_moderator = models.BooleanField("Moderator status", default=False)
     is_administrator = models.BooleanField("Administrator status", default=False)
     is_banned = models.BooleanField("Banned status", default=False)
+    avatar_url = models.ImageField(upload_to=upload_to, blank=True, null=True)
 
     USERNAME_FIELD = "username"
     REQUIRED_FIELDS = [

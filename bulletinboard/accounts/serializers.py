@@ -76,6 +76,7 @@ class UserSerializer(BaseUserSerializer):
     """
 
     user_posts = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+    avatar_url = serializers.ImageField(required=False)
 
     class Meta:
         model = User
@@ -97,6 +98,7 @@ class UserSerializer(BaseUserSerializer):
             "is_moderator",
             "is_administrator",
             "is_banned",
+            "avatar_url"
         ]
 
         read_only_fields = [
