@@ -1,6 +1,7 @@
 import { observer } from "mobx-react-lite";
 import React from "react";
 import { Link } from "react-router-dom";
+import TimeSince from "./TimeSince";
 
 type Props = {
   isLocked: boolean;
@@ -9,6 +10,8 @@ type Props = {
   authorUsername: string;
   params: { boardPk: string; topicPk: string };
   isSticky: boolean;
+  lastRepliedUserName: string;
+  lastReplied: Date;
 };
 
 const ThreadCard: React.FC<Props> = ({
@@ -18,6 +21,8 @@ const ThreadCard: React.FC<Props> = ({
   params,
   authorUsername,
   isSticky,
+  lastRepliedUserName,
+  lastReplied,
 }) => {
   return (
     <Link
@@ -35,7 +40,9 @@ const ThreadCard: React.FC<Props> = ({
           <span className="text-sm pl-2 text-gray-500">
             Created by: {authorUsername}
           </span>
-          <span className="text-sm pl-2 text-gray-500">Last replied:</span>
+          <span className="text-sm pl-2 text-gray-500">
+            Last replied: <TimeSince date={lastReplied} /> by {lastRepliedUserName}
+          </span>
         </div>
       </div>
     </Link>

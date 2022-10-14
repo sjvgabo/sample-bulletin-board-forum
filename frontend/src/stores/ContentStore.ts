@@ -111,6 +111,8 @@ export default class ContentStore extends Model({
       isLocked: threadData.is_locked,
       authorPk: threadData.author,
       authorUsername: threadData.author_username,
+      lastRepliedUsername: threadData.last_replied_user,
+      lastReplied: threadData.last_replied,
     });
     thread.fetchPosts();
     return thread;

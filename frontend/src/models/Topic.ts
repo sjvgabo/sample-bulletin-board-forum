@@ -1,5 +1,4 @@
 import { Model, model, modelFlow, prop, _async, _await } from "mobx-keystone";
-import { tokenCtx } from "../stores/store";
 import Board from "./Board";
 
 export type BoardData = {
@@ -63,8 +62,7 @@ export default class Topic extends Model({
   }
 
   @modelFlow
-  deleteBoard = _async(function* (this: Topic, boardPk: number) {
-    const token = tokenCtx.get(this);
+  deleteBoard = _async(function* (this: Topic, boardPk: number, token: string) {
     let response: Response;
     try {
       response = yield* _await(
@@ -97,8 +95,8 @@ export default class Topic extends Model({
     this: Topic,
     name: string,
     description: string,
+    token: string,
   ) {
-    const token = tokenCtx.get(this);
     let response: Response;
     try {
       response = yield* _await(

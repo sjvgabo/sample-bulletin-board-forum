@@ -12,7 +12,7 @@ const ThreadForm: React.FC<Props> = ({ board }) => {
   const store = useStore();
   const authorPk = store.accountsStore.authenticated_user?.pk as number;
 
-  const { handleSubmit, handleChange, values, errors, touched } = useFormik({
+  const { handleSubmit, handleChange, values, errors, touched, resetForm } = useFormik({
     initialValues: {
       title: "",
     },
@@ -20,7 +20,8 @@ const ThreadForm: React.FC<Props> = ({ board }) => {
       title: Yup.string().required("Title must not be empty"),
     }),
     onSubmit: async (values) => {
-      await board.createThread(values.title, authorPk);
+      await board.createThread(values.title, authorPk, store.accountsStore.token);
+      resetForm();
     },
   });
 

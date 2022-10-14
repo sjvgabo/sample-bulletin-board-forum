@@ -1,11 +1,11 @@
 import { observer } from "mobx-react-lite";
 import React, { useEffect, useState } from "react";
-import ReactPaginate from "react-paginate";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import DeleteButton from "../components/DeleteButton";
 import Divider from "../components/Divider";
 import { Loading } from "../components/Loading";
 import LockThreadButton from "../components/LockThreadButton";
+import Paginator from "../components/Paginator";
 import PostCard from "../components/PostCard";
 import PostForm from "../components/PostForm";
 import Board from "../models/Board";
@@ -63,7 +63,7 @@ const ThreadPage: React.FC = () => {
   const handleThreadDelete = async () => {
     if (thread && board) {
       await board?.deleteThread(thread.pk, store.token);
-      navigate("/");
+      navigate(`/topic/${params.topicPk}/board/${params.boardPk}/`);
     }
   };
 
@@ -73,7 +73,6 @@ const ThreadPage: React.FC = () => {
 
   return (
     <div className="bg-slate-200 min-h-full h-auto p-10">
-      {/* Shows error if board and/or thread is undefined */}
       {board && thread ? (
         <div className="bg-white p-5">
           {/* Board and Thread info */}
@@ -111,16 +110,9 @@ const ThreadPage: React.FC = () => {
           )}
 
           {/* Pagination */}
-          <div className="flex">
-          <ReactPaginate
-            nextLabel="Next >"
-            previousLabel="< Prev"
-            pageCount={pageCount}
-            onPageChange={handlePageClick}
-          />
-          </div>
+          <Paginator handlePageClick={handlePageClick} pageCount={pageCount} />
 
-          {/* Reply component */}
+          {/* Reply form */}
           <div>
             {!thread.isLocked && isAunthenticated && userNotBanned && (
               <PostForm
@@ -129,6 +121,7 @@ const ThreadPage: React.FC = () => {
                 token={store.token}
               />
             )}
+            {/* If user is banned, this shows instead of form */}
             {!userNotBanned && isAunthenticated && (
               <span>Banned user detected. You cannot post in this thread.</span>
             )}

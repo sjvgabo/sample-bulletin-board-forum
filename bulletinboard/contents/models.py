@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.db import models
+from traitlets import default
 
 User = get_user_model()
 
@@ -51,9 +52,10 @@ class Thread(models.Model):
     author_username = models.CharField(
         "Author username", max_length=150, blank=True, editable=False
     )
-
+    last_replied = models.DateTimeField(auto_now_add=True, blank=True, null=True, editable=False)
+    last_replied_user = models.CharField(blank=True, max_length=150, editable=False)
     class Meta:
-        ordering = ["-is_sticky"]
+        ordering = ["-is_sticky", "-last_replied"]
 
     def __str__(self):
         return self.title
@@ -80,14 +82,13 @@ class Post(models.Model):
     )
     thread = models.ForeignKey(Thread, related_name="posts", on_delete=models.CASCADE)
     message = models.TextField(max_length=500)
-    date_created = models.DateField(auto_now_add=True, editable=False)
+    date_created = models.DateTimeField(auto_now_add=True, editable=False)
     author_username = models.CharField(
         "Author username", max_length=150, blank=True, editable=False
     )
 
     class Meta:
         ordering = ["date_created"]
-        get_latest_by = ["-date_created"]
 
     def __str__(self):
         return self.message
@@ -96,6 +97,8 @@ class Post(models.Model):
         self.author_username = self.author.username
         super().save(*args, **kwargs)
         thread = Thread.objects.get(pk=self.thread.pk)
+        thread.last_replied = self.date_created
+        thread.last_replied_user = self.author.username
         board = Board.objects.get(pk=thread.board.pk)
         thread.update_no_of_posts()
         board.update_no_of_posts()

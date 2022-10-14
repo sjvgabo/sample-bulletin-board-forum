@@ -1,5 +1,4 @@
 import { Model, model, modelFlow, prop, _async, _await } from "mobx-keystone";
-import { tokenCtx } from "../stores/store";
 import Thread from "./Thread";
 
 export type ThreadData = {
@@ -12,6 +11,9 @@ export type ThreadData = {
   board_pk: number;
   author: number;
   author_username: string;
+  last_replied: Date;
+  last_replied_user: string;
+
 };
 
 @model("bulletinboard/Board")
@@ -59,6 +61,8 @@ export default class Board extends Model({
           isLocked: thread.is_locked,
           authorPk: thread.author,
           authorUsername: thread.author_username,
+          lastReplied: thread.last_replied,
+          lastRepliedUsername: thread.last_replied_user,
         })
     );
   });
@@ -75,9 +79,9 @@ export default class Board extends Model({
   createThread = _async(function* (
     this: Board,
     title: string,
-    authorPk: number
+    authorPk: number,
+    token: string,
   ) {
-    const token = tokenCtx.get(this);
     let response: Response;
     try {
       response = yield* _await(

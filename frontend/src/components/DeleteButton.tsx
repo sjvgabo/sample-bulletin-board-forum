@@ -7,7 +7,7 @@ type Props = {
 const DeleteButton: React.FC<Props> = ({ handleDelete }) => {
   return (
     <button
-      className="text-xs bg-red-600 text-white p-1 rounded-md"
+      className="text-xs bg-red-600 text-gray-300 rounded-md"
       onClick={handleDelete}
     >
       DELETE

@@ -50,5 +50,3 @@ const EditBoardTopicForm: React.FC<Props> = ({
 };
 
 export default observer(EditBoardTopicForm);
-
-export {};

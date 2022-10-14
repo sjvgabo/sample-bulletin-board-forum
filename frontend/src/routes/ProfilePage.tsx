@@ -1,10 +1,12 @@
+import { observer } from "mobx-react";
 import React, { useEffect, useState } from "react";
-import ReactPaginate from "react-paginate";
 import { useParams } from "react-router-dom";
+import Avatar from "../components/Avatar";
 import BanButton from "../components/BanButton";
 import Divider from "../components/Divider";
 import EditButton from "../components/EditButton";
 import { Loading } from "../components/Loading";
+import Paginator from "../components/Paginator";
 import PostCard from "../components/PostCard";
 import ProfileDetails from "../components/ProfileDetails";
 import ProfileForm from "../components/ProfileForm";
@@ -68,25 +70,32 @@ const ProfilePage: React.FC = () => {
     return (
       <div className="bg-slate-200 h-auto min-h-full p-10">
         <div className="bg-white py-5 px-5">
-          <div className="text-2xl text-gray-800 font-semibold">
-            {user.username} {user.is_banned && "(BANNED)"}
-          </div>
-          <div className="text-sm text-gray-500">
-            {user.first_name} {user.last_name}
-          </div>
-          {isOwnProfile && <EditButton handleClick={handleEditButton} />}
-          {/* Checks the following so ban button shows up: 1. profile user is not
+          {/* Profile header */}
+          <div className="flex justify-between">
+            <div>
+              <h1 className="text-2xl text-gray-800 font-semibold">
+                {user.username} {user.is_banned && "(BANNED)"}
+              </h1>
+              <h2 className="text-sm text-gray-500">
+                {user.first_name} {user.last_name}
+              </h2>
+              {isOwnProfile && <EditButton handleClick={handleEditButton} />}
+              {/* Checks the following so ban button shows up: 1. profile user is not
           banned 2. profile user is not the same as logged user 3. profile user
           is not an administrator 4. logged user is an administrator or a
           moderator */}
-          {!user.is_banned &&
-            !isOwnProfile &&
-            !user.is_administrator &&
-            store.accountsStore.authenticated &&
-            (store.accountsStore.authenticated_user?.is_moderator ||
-              store.accountsStore.authenticated_user?.is_administrator) && (
-              <BanButton handleClick={handleBanUser} />
-            )}
+              {!user.is_banned &&
+                !isOwnProfile &&
+                !user.is_administrator &&
+                store.accountsStore.authenticated &&
+                (store.accountsStore.authenticated_user?.is_moderator ||
+                  store.accountsStore.authenticated_user?.is_administrator) && (
+                  <BanButton handleClick={handleBanUser} />
+                )}
+            </div>
+            <Avatar />
+          </div>
+
           <Divider />
           {edit ? (
             <ProfileForm user={user} handleEdit={handleConfirmOrCancel} />
@@ -113,11 +122,9 @@ const ProfilePage: React.FC = () => {
             ) : (
               <div>No posts yet</div>
             )}
-            <ReactPaginate
-              nextLabel="Next >"
-              previousLabel="< Prev"
+            <Paginator
+              handlePageClick={handlePageClick}
               pageCount={pageCount}
-              onPageChange={handlePageClick}
             />
           </div>
         </div>
@@ -127,4 +134,4 @@ const ProfilePage: React.FC = () => {
   return <div></div>;
 };
 
-export default ProfilePage;
+export default observer(ProfilePage);

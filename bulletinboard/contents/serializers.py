@@ -65,9 +65,11 @@ class ThreadSerializer(serializers.ModelSerializer):
             "board",
             "author",
             "author_username",
+            "last_replied",
+            "last_replied_user",
         ]
 
-        read_only_fields = ["pk", "board", "no_of_posts", "author_username"]
+        read_only_fields = ["pk", "board", "no_of_posts", "author_username", "last_replied", "last_replied_user"]
 
 
 class PostSerializer(serializers.ModelSerializer):

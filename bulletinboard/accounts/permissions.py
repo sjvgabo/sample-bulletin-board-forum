@@ -10,7 +10,6 @@ class IsUserOrReadOnly(permissions.BasePermission):
     message = "Editing other users is not allowed"
 
     def has_object_permission(self, request, view, obj):
-        print("Went here")
         if request.method in permissions.SAFE_METHODS:
             return True
 
@@ -29,9 +28,7 @@ class IsOtherUserOrReadOnly(permissions.BasePermission):
         return True
 
     def has_object_permission(self, request, view, obj):
-        print("Went here")
         if request.method in permissions.SAFE_METHODS:
             return True
 
-        print(obj)
         return request.user != obj

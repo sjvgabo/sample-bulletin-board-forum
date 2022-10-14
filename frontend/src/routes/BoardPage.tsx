@@ -1,8 +1,8 @@
 import { observer } from "mobx-react-lite";
 import React, { useEffect, useState } from "react";
-import ReactPaginate from "react-paginate";
 import { useNavigate, useParams } from "react-router";
 import EditBoardTopicForm from "../components/EditBoardTopicForm";
+import Paginator from "../components/Paginator";
 import ThreadCard from "../components/ThreadCard";
 import ThreadForm from "../components/ThreadForm";
 import Thread from "../models/Thread";
@@ -22,7 +22,7 @@ const BoardPage: React.FC = () => {
   const [pageCount, setPageCount] = useState<number>(1);
 
   const handleDelete = async () => {
-    await topic?.deleteBoard(parseInt(params.boardPk));
+    await topic?.deleteBoard(parseInt(params.boardPk), store.accountsStore.token);
     navigate("/");
   };
 
@@ -88,19 +88,13 @@ const BoardPage: React.FC = () => {
               threadPk={thread.pk}
               authorUsername={thread.authorUsername}
               params={params}
+              lastReplied={thread.lastReplied}
+              lastRepliedUserName={thread.lastRepliedUsername}
             />
           ))}
         </div>
         {/* Pagination */}
-        <div className="inline">
-          <ReactPaginate
-            nextLabel="Next >"
-            breakLabel="..."
-            previousLabel="< Prev"
-            pageCount={pageCount}
-            onPageChange={handlePageClick}
-          />
-        </div>
+        <Paginator handlePageClick={handlePageClick} pageCount={pageCount} />
       </div>
     </div>
   );

@@ -21,6 +21,8 @@ export default class Thread extends Model({
   authorPk: prop<number>(),
   authorUsername: prop<string>(),
   posts: prop<Post[]>(() => []),
+  lastReplied: prop<Date>(),
+  lastRepliedUsername: prop<string>(),
 }) {
   @modelFlow
   fetchPosts = _async(function* (this: Thread, pageNumber: number = 1) {

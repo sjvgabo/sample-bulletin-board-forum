@@ -1,5 +1,6 @@
 import { observer } from "mobx-react-lite";
 import React from "react";
+import { Link } from "react-router-dom";
 import Thread from "../models/Thread";
 import { useStore } from "../stores";
 import Avatar from "./Avatar";
@@ -20,7 +21,7 @@ const PostCard: React.FC<Props> = ({
   date,
   postPk,
   authorUsername,
-  thread
+  thread,
 }) => {
   const store = useStore();
   const userPk = store.accountsStore.authenticated_user?.pk;
@@ -30,20 +31,23 @@ const PostCard: React.FC<Props> = ({
       await thread.deletePost(postPk, store.token);
     }
   };
-  
+
   return (
     <div className="flex gap-5 my-7">
       {/* User Avatar */}
       <div>
         <Avatar />
       </div>
-      
 
       {/* Post Info */}
       <div className="flex flex-col">
         <div className="flex flex-col flex-grow ">
-          <div className="flex">
-            <span className="text-sm pr-2 font-semibold">{authorUsername}</span>
+          <div>
+            <Link to={`/profile/${authorPk}`}>
+              <span className="text-sm pr-2 font-semibold">
+                {authorUsername}
+              </span>
+            </Link>
             <TimeSince date={date} />
           </div>
           <div>
@@ -52,13 +56,14 @@ const PostCard: React.FC<Props> = ({
         </div>
         {userPk === authorPk && (
           <div>
-            {thread &&
-            <button
-              className="text-xs bg-red-600 text-white p-1 rounded-md"
-              onClick={handleDelete}
-            >
-              DELETE
-            </button>}
+            {thread && (
+              <button
+                className="text-xs  text-gray-400 rounded-md"
+                onClick={handleDelete}
+              >
+                Delete
+              </button>
+            )}
           </div>
         )}
       </div>
