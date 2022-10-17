@@ -40,11 +40,11 @@ class TopicViewSet(viewsets.ReadOnlyModelViewSet):
 
 class BoardViewSet(viewsets.ModelViewSet):
     """
-    Board viewset
+    Board viewset. Allows for creating, retrieving, listing, and deleting boards. Only administrators can 
     """
 
     queryset = Board.objects.all()
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsAdministratorOrReadOnly]
     serializer_class = serializers.BoardSerializer
 
     @action(detail=True)
