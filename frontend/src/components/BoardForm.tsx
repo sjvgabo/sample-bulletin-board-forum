@@ -7,7 +7,7 @@ type Props = {
   handleCreateBoard: (name: string, description: string) => void;
 };
 const BoardForm: React.FC<Props> = ({ handleCreateBoard }) => {
-  const { handleSubmit, handleChange, values, errors, touched } = useFormik({
+  const { handleSubmit, handleChange, values, errors, touched, resetForm } = useFormik({
     initialValues: {
       name: "",
       description: "",
@@ -18,8 +18,7 @@ const BoardForm: React.FC<Props> = ({ handleCreateBoard }) => {
     }),
     onSubmit: async (values) => {
       handleCreateBoard(values.name, values.description);
-      values.name = "";
-      values.description = "";
+      resetForm();
     },
   });
 

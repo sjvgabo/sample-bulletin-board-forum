@@ -3,6 +3,7 @@ from bulletinboard.contents import serializers
 from bulletinboard.contents.models import Board, Post, Thread, Topic
 from bulletinboard.contents.permissions import (
     IsAdministratorOrReadOnly,
+    IsModeratorOrAdministrator,
     IsNotBanned,
     IsNotBannedOrReadOnly,
     IsOwnerOrReadOnly,
@@ -33,18 +34,21 @@ class TopicViewSet(viewsets.ReadOnlyModelViewSet):
         Returns all boards under a topic
         """
         topic = self.get_object()
-        board_list = Board.objects.filter(topic=topic)
+        board_list = Board.objects.with_thread_post_counts().filter(topic=topic)
         board_json = BoardSerializer(board_list, many=True)
         return Response(board_json.data)
 
 
 class BoardViewSet(viewsets.ModelViewSet):
     """
-    Board viewset. Allows for creating, retrieving, listing, and deleting boards. Only administrators can 
+    Board viewset. Allows for creating, retrieving, listing, and deleting boards. Only administrators can
     """
 
-    queryset = Board.objects.all()
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsAdministratorOrReadOnly]
+    queryset = Board.objects.with_thread_post_counts()
+    permission_classes = [
+        permissions.IsAuthenticatedOrReadOnly,
+        IsAdministratorOrReadOnly,
+    ]
     serializer_class = serializers.BoardSerializer
 
     @action(detail=True)
@@ -53,7 +57,11 @@ class BoardViewSet(viewsets.ModelViewSet):
         Returns paginated threads under the board (Default: 20 items)
         """
         board = self.get_object()
-        threads = Thread.objects.filter(board=board)
+        threads = (
+            Thread.objects.with_post_counts_and_latest_replied()
+            .filter(board=board)
+            .order_by("-is_sticky", "-last_replied")
+        )
         paginated_threads = self.paginate_queryset(threads)
         threads_json = ThreadSerializer(paginated_threads, many=True)
         return Response(threads_json.data)
@@ -77,9 +85,11 @@ class ThreadViewSet(viewsets.ModelViewSet):
     Thread viewset
     """
 
-    queryset = Thread.objects.all()
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    queryset = Thread.objects.with_post_counts_and_latest_replied().order_by(
+        "-last_replied"
+    )
     serializer_class = serializers.ThreadSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     @action(detail=True)
     def posts(self, request, pk=None):
@@ -106,7 +116,7 @@ class ThreadViewSet(viewsets.ModelViewSet):
         if self.action == "destroy":
             permission_classes = [
                 permissions.IsAuthenticatedOrReadOnly,
-                IsOwnerOrReadOnly,
+                (IsOwnerOrReadOnly | IsModeratorOrAdministrator),
             ]
         elif self.action in ["update", "partial_update"]:
             permission_classes = [IsModeratorOrAdministratorOrReadOnly]

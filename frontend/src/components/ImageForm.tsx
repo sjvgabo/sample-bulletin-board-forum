@@ -10,12 +10,7 @@ const ImageForm: React.FC = () => {
   const handleFileUpload = async () => {
     setToUpload(false);
     if (image) {
-      try {
-        await store.accountsStore.uploadAvatar(image);
-      } catch (error) {
-        alert("Upload failed.");
-        return;
-      }
+      await store.accountsStore.uploadAvatar(image);
     }
   };
 
@@ -27,6 +22,7 @@ const ImageForm: React.FC = () => {
       setImage(e.currentTarget.files[0]);
     }
   };
+
   return toUpload ? (
     <div>
       <input

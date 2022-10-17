@@ -32,7 +32,11 @@ const RegistrationForm: React.FC<Props> = ({ handleNavigate }) => {
           .required("Required"),
         password: Yup.string()
           .min(8, "Atleast 8 characters")
-          .required("Required"),
+          .required("Required")
+          .matches(
+            /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})/,
+            "Password too weak. Include a special character, number, and both lowercase and uppercase"
+          ),
         first_name: Yup.string().required("Required"),
         last_name: Yup.string().required("Required"),
         email: Yup.string().email().required("Required"),
@@ -49,6 +53,7 @@ const RegistrationForm: React.FC<Props> = ({ handleNavigate }) => {
         website: Yup.string().max(50, "Max of 50 characters").notRequired(),
       }),
       onSubmit: async (values) => {
+        alert(values.date_of_birth);
         await store.accountsStore.createUser(values);
         resetForm();
         handleNavigate();
@@ -131,6 +136,7 @@ const RegistrationForm: React.FC<Props> = ({ handleNavigate }) => {
         <label htmlFor="date_of_birth">Birthdate:</label>
         <input
           type="date"
+          max="2022-10-12"
           id="date_of_birth"
           name="date_of_birth"
           onChange={handleChange}

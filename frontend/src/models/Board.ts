@@ -36,7 +36,7 @@ export default class Board extends Model({
         )
       );
     } catch (error) {
-      alert("Error in fetching data from database.")
+      alert("Error in fetching data from database.");
       return;
     }
 
@@ -44,7 +44,7 @@ export default class Board extends Model({
     try {
       data = yield* _await(response.json());
     } catch (error) {
-      alert("Error in parsing response data")
+      alert("Error in parsing response data");
       return;
     }
 

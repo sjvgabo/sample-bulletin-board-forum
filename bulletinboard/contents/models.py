@@ -1,8 +1,20 @@
+from bulletinboard.contents.managers import BoardManager
 from django.contrib.auth import get_user_model
 from django.db import models
-from traitlets import default
+from django.db.models.functions import Coalesce
+from django.db.models import Subquery, OuterRef
 
 User = get_user_model()
+
+
+class ThreadManager(models.Manager):
+    def with_post_counts_and_latest_replied(self):
+        latest = Post.objects.filter(thread=OuterRef("pk")).order_by("-date_created")
+        return self.annotate(
+            no_of_posts=Coalesce(models.Count("posts"), 0),
+            last_replied=Subquery(latest.values("date_created")[:1]),
+            last_replied_user=Subquery(latest.values("author_username")[:1]),
+        )
 
 
 class Topic(models.Model):
@@ -16,22 +28,14 @@ class Board(models.Model):
     topic = models.ForeignKey(Topic, related_name="boards", on_delete=models.CASCADE)
     name = models.CharField(max_length=50)
     description = models.TextField(max_length=500)
-    no_of_threads = models.IntegerField("Number of threads", default=0)
-    no_of_posts = models.IntegerField("Number of posts", default=0)
+
+    objects = BoardManager()
+
+    class Meta:
+        ordering = ["pk"]
 
     def __str__(self):
         return self.name
-
-    def update_no_of_threads(self):
-        self.no_of_threads = Thread.objects.filter(board__pk=self.pk).count()
-        self.save()
-
-    def update_no_of_posts(self):
-        number_of_posts = sum(
-            thread.no_of_posts for thread in Thread.objects.filter(board__pk=self.pk)
-        )
-        self.no_of_posts = number_of_posts
-        self.save()
 
 
 class Thread(models.Model):
@@ -48,17 +52,16 @@ class Thread(models.Model):
     )
     is_sticky = models.BooleanField(default=False)
     is_locked = models.BooleanField(default=False)
-    no_of_posts = models.IntegerField("Number of posts", default=0)
     author_username = models.CharField(
-        "Author username", max_length=150, blank=True, editable=False
+        "Author username", max_length=150, blank=True, editable=False, null=True
     )
-    last_replied = models.DateTimeField(
-        auto_now_add=True, blank=True, null=True, editable=False
-    )
-    last_replied_user = models.CharField(blank=True, max_length=150, editable=False)
+
+    objects = ThreadManager()
 
     class Meta:
-        ordering = ["-is_sticky", "-last_replied"]
+        ordering = [
+            "-is_sticky",
+        ]
 
     def __str__(self):
         return self.title
@@ -66,17 +69,6 @@ class Thread(models.Model):
     def save(self, *args, **kwargs):
         self.author_username = self.author.username
         super().save(*args, **kwargs)
-        board = Board.objects.get(pk=self.board.pk)
-        board.update_no_of_threads()
-
-    def delete(self, *args, **kwargs):
-        super(Thread, self).delete(*args, **kwargs)
-        board = Board.objects.get(pk=self.board.pk)
-        board.update_no_of_threads()
-
-    def update_no_of_posts(self):
-        self.no_of_posts = Post.objects.filter(thread__pk=self.pk).count()
-        self.save()
 
 
 class Post(models.Model):
@@ -99,16 +91,6 @@ class Post(models.Model):
     def save(self, *args, **kwargs):
         self.author_username = self.author.username
         super().save(*args, **kwargs)
-        thread = Thread.objects.get(pk=self.thread.pk)
-        thread.last_replied = self.date_created
-        thread.last_replied_user = self.author.username
-        board = Board.objects.get(pk=thread.board.pk)
-        thread.update_no_of_posts()
-        board.update_no_of_posts()
 
     def delete(self, *args, **kwargs):
         super(Post, self).delete(*args, **kwargs)
-        thread = Thread.objects.get(pk=self.thread.pk)
-        board = Board.objects.get(pk=thread.board.pk)
-        thread.update_no_of_posts()
-        board.update_no_of_posts()

@@ -22,6 +22,8 @@ class BoardSerializer(serializers.ModelSerializer):
 
     topic = serializers.PrimaryKeyRelatedField(queryset=Topic.objects.all(), many=False)
     threads = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+    no_of_posts = serializers.IntegerField(required=False)
+    no_of_threads = serializers.IntegerField(required=False)
 
     class Meta:
         model = Board
@@ -42,16 +44,9 @@ class ThreadSerializer(serializers.ModelSerializer):
     Serializer for Threads
     """
 
-    board = serializers.PrimaryKeyRelatedField(
-        queryset=Board.objects.all(),
-        many=False,
-    )
-    posts = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
-
-    author = serializers.PrimaryKeyRelatedField(
-        queryset=User.objects.all(),
-        many=False,
-    )
+    no_of_posts = serializers.IntegerField(required=False)
+    last_replied_user = serializers.CharField(required=False, allow_null=True)
+    last_replied = serializers.DateTimeField(required=False, allow_null=True)
 
     class Meta:
         model = Thread
@@ -61,21 +56,21 @@ class ThreadSerializer(serializers.ModelSerializer):
             "title",
             "is_sticky",
             "is_locked",
-            "no_of_posts",
             "board",
             "author",
             "author_username",
             "last_replied",
             "last_replied_user",
+            "no_of_posts",
         ]
 
         read_only_fields = [
             "pk",
-            "board",
-            "no_of_posts",
             "author_username",
             "last_replied",
             "last_replied_user",
+            "no_of_posts",
+            "posts",
         ]
 
 

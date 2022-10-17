@@ -66,7 +66,7 @@ export default class User extends Model({
     if (response.ok) {
       alert("Account updated");
     } else {
-      alert("Error in updating account. Recheck values submitted");
+      alert(response.json);
     }
   });
 

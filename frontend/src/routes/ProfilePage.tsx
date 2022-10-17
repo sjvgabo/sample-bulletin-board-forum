@@ -45,7 +45,7 @@ const ProfilePage: React.FC = () => {
 
   useEffect(() => {
     setIsOwnProfile(
-      parseInt(params.userPk) === store.accountsStore.authenticated_user?.pk
+      parseInt(params.userPk, 10) === store.accountsStore.authenticated_user?.pk
     );
     (async () => {
       await store.accountsStore.fetchUser(parseInt(params.userPk));
@@ -80,8 +80,13 @@ const ProfilePage: React.FC = () => {
               <h2 className="text-sm text-gray-500">
                 {user.first_name} {user.last_name}
               </h2>
-              {isOwnProfile && <EditButton handleClick={handleEditButton} />}
-              <ImageForm />
+              {isOwnProfile && (
+                <>
+                  <EditButton handleClick={handleEditButton} />
+                  <ImageForm />
+                </>
+              )}
+
               {/* Checks the following so ban button shows up: 1. profile user is not
           banned 2. profile user is not the same as logged user 3. profile user
           is not an administrator 4. logged user is an administrator or a

@@ -13,6 +13,7 @@ type Props = {
 
 const ProfileForm: React.FC<Props> = ({ user, handleEdit }) => {
   const store = useStore();
+  const token = store.accountsStore.token;
   const handleCancel = () => {
     handleEdit(false);
   };
@@ -42,7 +43,7 @@ const ProfileForm: React.FC<Props> = ({ user, handleEdit }) => {
         website: Yup.string().max(50, "Max of 50 characters").notRequired(),
       }),
       onSubmit: async (values) => {
-        await user.partialUpdateUser(values, store.accountsStore.token);
+        await user.partialUpdateUser(values, token);
         resetForm();
         handleEdit(false);
       },
@@ -73,6 +74,8 @@ const ProfileForm: React.FC<Props> = ({ user, handleEdit }) => {
           type="date"
           id="date_of_birth"
           name="date_of_birth"
+          max="2022-10-10"
+          min="1900-01-01"
           onChange={handleChange}
           value={values.date_of_birth}
           className="border-2 flex-1"

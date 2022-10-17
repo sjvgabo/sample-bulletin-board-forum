@@ -16,6 +16,7 @@ import ErrorPage from "./ErrorPage";
 const ThreadPage: React.FC = () => {
   const store = useStore();
   const navigate = useNavigate();
+  const token = store.accountsStore.token;
   const isAunthenticated = store.accountsStore.authenticated;
   const userNotBanned = !store.accountsStore.authenticated_user?.is_banned;
   const userModOrAdmin =
@@ -53,12 +54,12 @@ const ThreadPage: React.FC = () => {
   }, [pageNumber, params.boardPk, params.threadPk, store.contentStore]);
 
   const handleLockClick = async () => {
-    thread?.toggleLockThread(store.token);
+    thread?.toggleLockThread(token);
   };
 
   const handleThreadDelete = async () => {
     if (thread && board) {
-      await board?.deleteThread(thread.pk, store.accountsStore.token);
+      await board?.deleteThread(thread.pk, token);
       navigate(`/topic/${params.topicPk}/board/${params.boardPk}/`);
     }
   };
@@ -118,7 +119,7 @@ const ThreadPage: React.FC = () => {
               <PostForm
                 threadPk={parseInt(params.threadPk)}
                 thread={thread}
-                token={store.accountsStore.token}
+                token={token}
               />
             )}
             {/* If user is banned, this shows instead of form */}

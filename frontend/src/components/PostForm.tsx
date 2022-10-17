@@ -14,7 +14,7 @@ const PostForm: React.FC<Props> = ({ threadPk, thread, token }) => {
   const store = useStore();
   const authorPk = store.accountsStore.authenticated_user?.pk as number;
 
-  const { handleSubmit, handleChange, values, errors, touched } = useFormik({
+  const { handleSubmit, handleChange, values, errors, touched, resetForm } = useFormik({
     initialValues: {
       message: "",
     },
@@ -23,7 +23,7 @@ const PostForm: React.FC<Props> = ({ threadPk, thread, token }) => {
     }),
     onSubmit: async (values) => {
       await thread.createPost(values.message, threadPk, authorPk, token);
-      values.message = "";
+      resetForm();
     },
   });
 

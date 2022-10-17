@@ -27,10 +27,11 @@ const PostCard: React.FC<Props> = ({
 }) => {
   const store = useStore();
   const userPk = store.accountsStore.authenticated_user?.pk;
+  const token = store.accountsStore.token;
 
   const handleDelete = async () => {
     if (thread) {
-      await thread.deletePost(postPk, store.accountsStore.token);
+      await thread.deletePost(postPk, token);
     }
   };
 

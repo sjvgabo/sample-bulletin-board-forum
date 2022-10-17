@@ -13,19 +13,22 @@ const BoardPage: React.FC = () => {
   const store = useStore();
   let params: { boardPk: string; topicPk: string };
   params = useParams() as { boardPk: string; topicPk: string };
-  const topic = store.contentStore.getTopic(parseInt(params.topicPk));
-  const board = topic?.getBoard(parseInt(params.boardPk));
+  const token = store.accountsStore.token;
+  const topic = store.contentStore.getTopic(parseInt(params.topicPk, 10));
+  const board = topic?.getBoard(parseInt(params.boardPk, 10));
+
+  // To check whether user has permissions to certain features
   const userNotBanned = !store.accountsStore.authenticated_user?.is_banned;
   const isAunthenticated = store.accountsStore.authenticated;
+  const isAdmin = store.accountsStore.authenticated_user?.is_administrator;
+
+  // For pagination
   const [pageNumber, setPageNumber] = useState<number>(1);
   const defaultPageItems = 20;
   const [pageCount, setPageCount] = useState<number>(1);
 
   const handleDelete = async () => {
-    await topic?.deleteBoard(
-      parseInt(params.boardPk),
-      store.accountsStore.token
-    );
+    await topic?.deleteBoard(parseInt(params.boardPk), token);
     navigate("/");
   };
 
@@ -35,7 +38,7 @@ const BoardPage: React.FC = () => {
 
   const handleChangeTopic = async (topicPk: number) => {
     if (board && topic) {
-      await board?.changeTopic(store.accountsStore.token, topicPk);
+      await board?.changeTopic(token, topicPk);
       await store.contentStore.fetchTopics();
     }
   };
@@ -55,7 +58,7 @@ const BoardPage: React.FC = () => {
         <div className="mb-10">
           <span className="text-2xl text-gray-800 block">{board?.name}</span>
           {/* DELETE BOARD (Will only show if user is an administrator) */}
-          {store.accountsStore.authenticated_user?.is_administrator && board && (
+          {isAdmin && board && (
             <>
               <button
                 className="text-xs bg-red-600 text-white p-1 rounded-md"

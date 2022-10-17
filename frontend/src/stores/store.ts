@@ -17,19 +17,12 @@ export const tokenCtx = createContext<string>();
 export default class Store extends Model({
   contentStore: prop<ContentStore>(),
   accountsStore: prop<AccountsStore>(),
-  token: prop<string>("").withSetter(),
 }) {
-  onInit() {
-    tokenCtx.setComputed(this, () => this.token);
-  }
 
   @modelFlow
   load = _async(function* (this: Store) {
     yield* _await(this.contentStore.fetchTopics());
     yield* _await(this.accountsStore.reAuthUser());
 
-    if (this.accountsStore.authenticated) {
-      this.setToken(this.accountsStore.token);
-    }
   });
 }

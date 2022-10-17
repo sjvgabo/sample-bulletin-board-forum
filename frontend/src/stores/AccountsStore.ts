@@ -82,7 +82,9 @@ export default class AccountsStore extends Model({
       alert("Account successfully created");
       return;
     } else {
-      alert("Error in creating account. Recheck values submitted");
+      let error: string;
+      error = yield* _await(response.text())
+      alert(error);
     }
   });
 

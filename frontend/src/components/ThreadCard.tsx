@@ -23,37 +23,35 @@ const ThreadCard: React.FC<Props> = ({
   isSticky,
   lastRepliedUserName,
   lastReplied,
-}) => {
-  return (
-    <Link
-      to={`/topic/${params.topicPk}/board/${params.boardPk}/thread/${threadPk}`}
-    >
-      <div className="p-3 bg-sky-200 my-1 rounded-sm flex flex-col">
-        <div>
-          <span>
-            {isSticky && "[STICKY]"}
-            {isLocked && "[LOCKED] "}
-            {title}
-          </span>
-        </div>
-        <div>
-          <span className="text-sm pl-2 text-gray-500">
-            Created by: {authorUsername}
-          </span>
-          {lastRepliedUserName ? (
-            <span className="text-sm pl-2 text-gray-500">
-              Last replied: <TimeSince date={lastReplied} /> by{" "}
-              {lastRepliedUserName}
-            </span>
-          ) : (
-            <span className="text-sm pl-2 text-gray-500">
-              No post created yet
-            </span>
-          )}
-        </div>
+}) => (
+  <Link
+    to={`/topic/${params.topicPk}/board/${params.boardPk}/thread/${threadPk}`}
+  >
+    <div className="p-3 bg-sky-200 my-1 rounded-sm flex flex-col">
+      <div>
+        <span>
+          {isSticky && "[STICKY]"}
+          {isLocked && "[LOCKED] "}
+          {title}
+        </span>
       </div>
-    </Link>
-  );
-};
+      <div>
+        <span className="text-sm pl-2 text-gray-500">
+          Created by: {authorUsername}
+        </span>
+        {lastRepliedUserName ? (
+          <span className="text-sm pl-2 text-gray-500">
+            Last replied: <TimeSince date={lastReplied} /> by{" "}
+            {lastRepliedUserName}
+          </span>
+        ) : (
+          <span className="text-sm pl-2 text-gray-500">
+            No post created yet
+          </span>
+        )}
+      </div>
+    </div>
+  </Link>
+);
 
 export default observer(ThreadCard);
