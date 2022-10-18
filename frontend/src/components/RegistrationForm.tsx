@@ -55,7 +55,6 @@ const RegistrationForm: React.FC<Props> = ({ handleNavigate }) => {
         website: Yup.string().max(50, "Max of 50 characters").notRequired(),
       }),
       onSubmit: async (values) => {
-        alert(values.date_of_birth);
         await store.accountsStore.createUser(values);
         resetForm();
         handleNavigate();

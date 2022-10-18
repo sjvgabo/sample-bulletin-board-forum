@@ -244,8 +244,7 @@ export default class AccountsStore extends Model({
     userPk: number,
     pageNumber: number = 1
   ) {
-    console.log("fetching posts");
-
+    
     let response: Response;
     try {
       response = yield* _await(

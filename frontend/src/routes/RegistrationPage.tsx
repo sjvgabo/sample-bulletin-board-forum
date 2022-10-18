@@ -14,9 +14,7 @@ const RegistrationPage: React.FC = () => {
             Account Registration
           </span>
         </div>
-        <div>
-          <RegistrationForm handleNavigate={handleNavigate} />
-        </div>
+        <RegistrationForm handleNavigate={handleNavigate} />
       </div>
     </div>
   );

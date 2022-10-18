@@ -21,7 +21,7 @@ const BoardPage: React.FC = () => {
   const userNotBanned = !store.accountsStore.authenticated_user?.is_banned;
   const isAunthenticated = store.accountsStore.authenticated;
   const isAdmin = store.accountsStore.authenticated_user?.is_administrator;
-
+  
   // For pagination
   const [pageNumber, setPageNumber] = useState<number>(1);
   const defaultPageItems = 20;
@@ -87,14 +87,8 @@ const BoardPage: React.FC = () => {
           {board?.threads.map((thread: Thread) => (
             <ThreadCard
               key={thread.pk}
-              isSticky={thread.isSticky}
-              isLocked={thread.isLocked}
-              title={thread.title}
-              threadPk={thread.pk}
-              authorUsername={thread.authorUsername}
               params={params}
-              lastReplied={thread.lastReplied}
-              lastRepliedUserName={thread.lastRepliedUsername}
+              thread={thread}
             />
           ))}
         </div>

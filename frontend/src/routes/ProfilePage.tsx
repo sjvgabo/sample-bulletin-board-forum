@@ -65,7 +65,7 @@ const ProfilePage: React.FC = () => {
     store.accountsStore,
     postLength,
   ]);
-  console.log(store.accountsStore.currentPosts)
+  
   if (loading) <Loading />;
   if (user) {
     return (
@@ -118,12 +118,7 @@ const ProfilePage: React.FC = () => {
                 {store.accountsStore.currentPosts.map((post) => (
                   <PostCard
                     key={post.pk}
-                    authorPk={post.authorPk}
-                    message={post.message}
-                    date={post.date_created}
-                    postPk={post.pk}
-                    authorUsername={post.authorUsername}
-                    authorAvatarURL={post.authorAvatarURL}
+                    post={post}
                   />
                 ))}
               </div>

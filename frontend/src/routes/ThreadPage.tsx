@@ -48,6 +48,7 @@ const ThreadPage: React.FC = () => {
 
       setThread(newThread);
       await newThread?.fetchPosts(pageNumber);
+      
       setPageCount(Math.ceil(newThread.noOfPosts / itemPerPage));
       setLoading(false);
     })();
@@ -96,12 +97,7 @@ const ThreadPage: React.FC = () => {
               {thread.posts.map((post) => (
                 <PostCard
                   key={post.pk}
-                  authorPk={post.authorPk}
-                  message={post.message}
-                  date={post.date_created}
-                  postPk={post.pk}
-                  authorUsername={post.authorUsername}
-                  authorAvatarURL={post.authorAvatarURL}
+                  post={post}
                   thread={thread}
                 />
               ))}

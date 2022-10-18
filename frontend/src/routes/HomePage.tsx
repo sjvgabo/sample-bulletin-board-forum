@@ -1,5 +1,6 @@
 import { observer } from "mobx-react-lite";
 import React from "react";
+
 import TopicCard from "../components/TopicCard";
 import Topic from "../models/Topic";
 import { useStore } from "../stores";
@@ -10,12 +11,10 @@ const HomePage: React.FC = () => {
   return (
     <div className="h-auto min-h-full bg-slate-200 pt-10">
       <div className="">
-        <div className="">
-          {topics &&
-            topics.map((topic: Topic) => (
-              <TopicCard key={topic.pk} topic={topic} />
-            ))}
-        </div>
+        {topics &&
+          topics.map((topic: Topic) => (
+            <TopicCard key={topic.pk} topic={topic} />
+          ))}
       </div>
     </div>
   );
