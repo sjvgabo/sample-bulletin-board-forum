@@ -7,20 +7,23 @@ type Props = {
   handleCreateBoard: (name: string, description: string) => void;
 };
 const BoardForm: React.FC<Props> = ({ handleCreateBoard }) => {
-  const { handleSubmit, handleChange, values, errors, touched, resetForm } = useFormik({
-    initialValues: {
-      name: "",
-      description: "",
-    },
-    validationSchema: Yup.object({
-      name: Yup.string().required("Name must not be empty"),
-      description: Yup.string().required("Description must not be empty"),
-    }),
-    onSubmit: async (values) => {
-      handleCreateBoard(values.name, values.description);
-      resetForm();
-    },
-  });
+  const { handleSubmit, handleChange, values, errors, touched, resetForm } =
+    useFormik({
+      initialValues: {
+        name: "",
+        description: "",
+      },
+      validationSchema: Yup.object({
+        name: Yup.string().trim().required("Name must not be empty"),
+        description: Yup.string()
+          .trim()
+          .required("Description must not be empty"),
+      }),
+      onSubmit: async (values) => {
+        handleCreateBoard(values.name, values.description);
+        resetForm();
+      },
+    });
 
   return (
     <form className="flex flex-col py-20 pr-32" onSubmit={handleSubmit}>

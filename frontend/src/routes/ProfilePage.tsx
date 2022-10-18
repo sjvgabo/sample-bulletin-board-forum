@@ -16,6 +16,7 @@ import { useStore } from "../stores";
 
 const ProfilePage: React.FC = () => {
   const store = useStore();
+  const token = store.accountsStore.token;
   let params: { userPk: string };
   params = useParams() as { userPk: string };
   const [isOwnProfile, setIsOwnProfile] = useState(false);
@@ -26,7 +27,6 @@ const ProfilePage: React.FC = () => {
   const defaultPageItems = 20;
   const [pageCount, setPageCount] = useState<number>(1);
   const postLength = user?.user_posts.length || 0;
-
   const handleEditButton = () => {
     setEdit(true);
   };
@@ -36,7 +36,7 @@ const ProfilePage: React.FC = () => {
   };
 
   const handleBanUser = async () => {
-    await user?.banUser();
+    await user?.banUser(token);
   };
 
   const handlePageClick = (selectedItem: { selected: number }): void => {
@@ -65,7 +65,7 @@ const ProfilePage: React.FC = () => {
     store.accountsStore,
     postLength,
   ]);
-
+  console.log(store.accountsStore.currentPosts)
   if (loading) <Loading />;
   if (user) {
     return (

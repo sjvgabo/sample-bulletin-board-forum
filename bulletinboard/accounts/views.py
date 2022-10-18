@@ -85,7 +85,7 @@ class UserViewSet(
         user = self.get_object()
         posts = Post.objects.filter(author=user).order_by("-date_created")
         paginated_posts = self.paginate_queryset(posts)
-        user_posts_json = PostSerializer(paginated_posts, many=True)
+        user_posts_json = PostSerializer(paginated_posts, many=True, context={'request': request})
         return Response(user_posts_json.data)
 
 

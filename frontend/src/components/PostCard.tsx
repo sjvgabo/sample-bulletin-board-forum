@@ -34,7 +34,7 @@ const PostCard: React.FC<Props> = ({
       await thread.deletePost(postPk, token);
     }
   };
-
+ 
   return (
     <div className="flex gap-5 my-7">
       {/* User Avatar */}

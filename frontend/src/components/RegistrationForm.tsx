@@ -37,15 +37,17 @@ const RegistrationForm: React.FC<Props> = ({ handleNavigate }) => {
             /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})/,
             "Password too weak. Include a special character, number, and both lowercase and uppercase"
           ),
-        first_name: Yup.string().required("Required"),
-        last_name: Yup.string().required("Required"),
+        first_name: Yup.string().trim().required("Required"),
+        last_name: Yup.string().trim().required("Required"),
         email: Yup.string().email().required("Required"),
-        date_of_birth: Yup.string().required("Required"),
-        about_myself: Yup.string().required("Required"),
+        date_of_birth: Yup.string().trim().required("Required"),
+        about_myself: Yup.string().trim().required("Required"),
         hometown: Yup.string()
+          .trim()
           .max(50, "Max of 50 characters")
           .required("Required"),
         present_location: Yup.string()
+          .trim()
           .max(100, "Max of 100 characters")
           .required("Required"),
         gender: Yup.string().max(10, "Max of 10 characters").notRequired(),

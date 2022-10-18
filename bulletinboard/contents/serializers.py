@@ -87,6 +87,7 @@ class PostSerializer(serializers.ModelSerializer):
         queryset=User.objects.all(),
         many=False,
     )
+    avatar_url = serializers.ImageField(required=False)
 
     class Meta:
         model = Post
@@ -97,5 +98,6 @@ class PostSerializer(serializers.ModelSerializer):
             "thread",
             "date_created",
             "author_username",
+            "avatar_url",
         ]
         read_only_fields = ["pk", "author", "thread", "date_created", "author_username"]

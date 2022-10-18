@@ -8,6 +8,7 @@ export type PostData = {
   thread: number;
   date_created: Date;
   author_username: string;
+  avatar_url: string | undefined;
 };
 
 @model("bulletinboard/Thread")
@@ -56,6 +57,7 @@ export default class Thread extends Model({
           message: post.message,
           date_created: post.date_created,
           authorUsername: post.author_username,
+          authorAvatarURL: post.avatar_url,
         })
     );
   });

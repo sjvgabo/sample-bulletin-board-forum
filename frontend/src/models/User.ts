@@ -1,6 +1,5 @@
 import { Model, model, modelFlow, prop, _async, _await } from "mobx-keystone";
 import moment from "moment";
-import { tokenCtx } from "../stores/store";
 import Post from "./Post";
 
 type UpdateProps = {
@@ -71,8 +70,7 @@ export default class User extends Model({
   });
 
   @modelFlow
-  banUser = _async(function* (this: User) {
-    const token = tokenCtx.get(this);
+  banUser = _async(function* (this: User, token: string) {
     const banData = {
       is_banned: true,
     };

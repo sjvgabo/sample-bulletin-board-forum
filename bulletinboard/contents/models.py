@@ -1,8 +1,8 @@
-from bulletinboard.contents.managers import BoardManager
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.db.models.functions import Coalesce
 from django.db.models import Subquery, OuterRef
+from bulletinboard.contents.managers import BoardManager
 
 User = get_user_model()
 
@@ -92,5 +92,5 @@ class Post(models.Model):
         self.author_username = self.author.username
         super().save(*args, **kwargs)
 
-    def delete(self, *args, **kwargs):
-        super(Post, self).delete(*args, **kwargs)
+    def avatar_url(self):
+        return self.author.avatar_url

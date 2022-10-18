@@ -1,5 +1,4 @@
 import {
-  createContext,
   Model,
   model,
   modelFlow,
@@ -8,10 +7,8 @@ import {
   _await,
 } from "mobx-keystone";
 import AccountsStore from "./AccountsStore";
-
 import ContentStore from "./ContentStore";
 
-export const tokenCtx = createContext<string>();
 
 @model("bulletin-board/Store")
 export default class Store extends Model({

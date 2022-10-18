@@ -19,7 +19,7 @@ const PostForm: React.FC<Props> = ({ threadPk, thread, token }) => {
       message: "",
     },
     validationSchema: Yup.object({
-      message: Yup.string().required("Message must not be empty"),
+      message: Yup.string().trim().required("Message must not be empty"),
     }),
     onSubmit: async (values) => {
       await thread.createPost(values.message, threadPk, authorPk, token);

@@ -30,12 +30,14 @@ const ProfileForm: React.FC<Props> = ({ user, handleEdit }) => {
         website: user.website,
       },
       validationSchema: Yup.object({
-        date_of_birth: Yup.string().required("Required"),
-        about_myself: Yup.string().required("Required"),
+        date_of_birth: Yup.string().trim().required("Required"),
+        about_myself: Yup.string().trim().required("Required"),
         hometown: Yup.string()
+          .trim()
           .max(50, "Max of 50 characters")
           .required("Required"),
         present_location: Yup.string()
+          .trim()
           .max(100, "Max of 100 characters")
           .required("Required"),
         gender: Yup.string().max(10, "Max of 10 characters").notRequired(),
