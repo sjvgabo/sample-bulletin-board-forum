@@ -105,7 +105,9 @@ class ThreadViewSet(viewsets.ModelViewSet):
         thread = self.get_object()
         posts = Post.objects.filter(thread=thread)
         paginated_posts = self.paginate_queryset(posts)
-        posts_json = PostSerializer(paginated_posts, many=True, context={'request': request})
+        posts_json = PostSerializer(
+            paginated_posts, many=True, context={"request": request}
+        )
         return Response(posts_json.data)
 
     def get_permissions(self):

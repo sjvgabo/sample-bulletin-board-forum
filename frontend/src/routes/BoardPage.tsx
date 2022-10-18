@@ -21,7 +21,7 @@ const BoardPage: React.FC = () => {
   const userNotBanned = !store.accountsStore.authenticated_user?.is_banned;
   const isAunthenticated = store.accountsStore.authenticated;
   const isAdmin = store.accountsStore.authenticated_user?.is_administrator;
-  
+
   // For pagination
   const [pageNumber, setPageNumber] = useState<number>(1);
   const defaultPageItems = 20;
@@ -85,11 +85,7 @@ const BoardPage: React.FC = () => {
         {/* THREADS */}
         <div className="flex flex-col">
           {board?.threads.map((thread: Thread) => (
-            <ThreadCard
-              key={thread.pk}
-              params={params}
-              thread={thread}
-            />
+            <ThreadCard key={thread.pk} params={params} thread={thread} />
           ))}
         </div>
         {/* Pagination */}

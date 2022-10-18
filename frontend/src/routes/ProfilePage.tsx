@@ -65,7 +65,7 @@ const ProfilePage: React.FC = () => {
     store.accountsStore,
     postLength,
   ]);
-  
+
   if (loading) <Loading />;
   if (user) {
     return (
@@ -116,10 +116,7 @@ const ProfilePage: React.FC = () => {
             {store.accountsStore.currentPosts.length > 0 ? (
               <div>
                 {store.accountsStore.currentPosts.map((post) => (
-                  <PostCard
-                    key={post.pk}
-                    post={post}
-                  />
+                  <PostCard key={post.pk} post={post} />
                 ))}
               </div>
             ) : (

@@ -83,7 +83,7 @@ export default class AccountsStore extends Model({
       return;
     } else {
       let error: string;
-      error = yield* _await(response.text())
+      error = yield* _await(response.text());
       alert(error);
     }
   });
@@ -235,7 +235,9 @@ export default class AccountsStore extends Model({
           ...data,
         });
       }
-    } catch (error) {}
+    } catch (error) {
+      alert("Error in fetching user from database");
+    }
   });
 
   @modelFlow
@@ -244,7 +246,6 @@ export default class AccountsStore extends Model({
     userPk: number,
     pageNumber: number = 1
   ) {
-    
     let response: Response;
     try {
       response = yield* _await(
@@ -300,7 +301,6 @@ export default class AccountsStore extends Model({
       alert("Update Error: Error in database.");
       return;
     }
-    console.log(image);
     let responseData: any;
     if (response.ok) {
       alert("Avatar updated");
@@ -311,6 +311,7 @@ export default class AccountsStore extends Model({
       responseData = yield* _await(response.json());
     } catch (error) {
       alert("Error parsing response data");
+      return;
     }
     this.setAuthenticated_user(responseData);
     yield* _await(

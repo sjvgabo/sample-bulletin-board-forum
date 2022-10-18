@@ -10,7 +10,7 @@ const LoginPage: React.FC = () => {
             Login Account
           </span>
         </div>
-          <LoginForm />
+        <LoginForm />
       </div>
     </div>
   );

@@ -20,7 +20,6 @@ export default class Topic extends Model({
   @modelFlow
   fetchBoards = _async(function* (this: Topic, pageNumber: number = 1) {
     let response: Response;
-
     try {
       response = yield* _await(
         fetch(
@@ -57,7 +56,7 @@ export default class Topic extends Model({
     return this.boards.find((board) => board.pk === boardPk);
   };
 
-  onInit() {
+  onInit () {
     this.fetchBoards();
   }
 

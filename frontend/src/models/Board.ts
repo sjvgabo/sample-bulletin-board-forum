@@ -73,6 +73,10 @@ export default class Board extends Model({
     this.threads.push(thread);
   };
 
+  onAttachedToRootStore() {
+    this.fetchThreads()
+  }
+
   @modelFlow
   createThread = _async(function* (
     this: Board,
@@ -178,5 +182,44 @@ export default class Board extends Model({
     } else {
       alert("Error in changing the board topic.");
     }
+  });
+
+  @modelFlow
+  fetchThread = _async(function* (this: Board, threadPk: number) {
+    let response: Response;
+    try {
+      response = yield* _await(
+        fetch(
+          `${process.env.REACT_APP_API_BASE_LINK}/content/thread/${threadPk}`
+        )
+      );
+    } catch (error) {
+      return;
+    }
+
+    let threadData: ThreadData;
+    try {
+      threadData = yield* _await(response.json());
+    } catch (error) {
+      return;
+    }
+
+    let thread: Thread;
+    thread = new Thread({
+      boardPk: threadData.board_pk,
+      title: threadData.title,
+      noOfPosts: threadData.no_of_posts,
+      pk: threadData.pk,
+      isSticky: threadData.is_sticky,
+      isLocked: threadData.is_locked,
+      authorPk: threadData.author,
+      authorUsername: threadData.author_username,
+      lastRepliedUsername: threadData.last_replied_user,
+      lastReplied: threadData.last_replied,
+    });
+    // To prevent duplicates
+    if (this.threads.filter((t) => t.pk === thread.pk).length === 0)
+      this.threads.push(thread);
+    thread.fetchPosts();
   });
 }

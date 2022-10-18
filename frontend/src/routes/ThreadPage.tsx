@@ -8,7 +8,6 @@ import LockThreadButton from "../components/LockThreadButton";
 import Paginator from "../components/Paginator";
 import PostCard from "../components/PostCard";
 import PostForm from "../components/PostForm";
-import Board from "../models/Board";
 import Thread from "../models/Thread";
 import { useStore } from "../stores";
 import ErrorPage from "./ErrorPage";
@@ -29,33 +28,31 @@ const ThreadPage: React.FC = () => {
     topicPk: string;
     threadPk: string;
   };
-  const [board, setBoard] = useState<Board>();
+  const topic = store.contentStore.getTopic(parseInt(params.topicPk, 10));
+  const board = topic?.getBoard(parseInt(params.boardPk, 10));
+  const thread = board?.getThread(parseInt(params.threadPk, 10)) as Thread;
   const [loading, setLoading] = useState(true);
-  const [thread, setThread] = useState<Thread>();
   const [pageNumber, setPageNumber] = useState<number>(1);
   const [pageCount, setPageCount] = useState<number>(1);
   const itemPerPage = 20;
-
   useEffect(() => {
     (async () => {
-      setBoard(
-        (await store.contentStore.fetchBoard(parseInt(params.boardPk))) as Board
-      );
-
-      const newThread = (await store.contentStore.fetchThread(
-        parseInt(params.threadPk)
-      )) as Thread;
-
-      setThread(newThread);
-      await newThread?.fetchPosts(pageNumber);
-      
-      setPageCount(Math.ceil(newThread.noOfPosts / itemPerPage));
-      setLoading(false);
+      await board?.fetchThread(parseInt(params.threadPk, 10));
+      if (thread) {
+        await thread.fetchPosts(pageNumber);
+        setPageCount(Math.ceil(thread.noOfPosts / itemPerPage));
+        setLoading(false);
+      }
     })();
-  }, [pageNumber, params.boardPk, params.threadPk, store.contentStore]);
+
+    if (thread) {
+    }
+  }, [board, pageNumber, params.threadPk, thread]);
 
   const handleLockClick = async () => {
-    thread?.toggleLockThread(token);
+    if (thread) {
+      thread?.toggleLockThread(token);
+    }
   };
 
   const handleThreadDelete = async () => {
@@ -72,63 +69,67 @@ const ThreadPage: React.FC = () => {
   if (loading) {
     return <Loading />;
   }
-  return (
-    <div className="bg-slate-200 min-h-full h-auto p-10">
-      {board && thread ? (
-        <div className="bg-white p-5">
-          {/* Board and Thread info */}
-          <Link to={`/topic/${params.topicPk}/board/${params.boardPk}`}>
-            <span>{board.name}</span>
-          </Link>
-          <h1 className="text-2xl font-bold mb-10 pb-2">{thread?.title}</h1>
-          {userModOrAdmin && isAunthenticated && (
-            <>
-              <LockThreadButton
-                handleLockClick={handleLockClick}
-                locked={thread.isLocked}
-              />
-              <DeleteButton handleDelete={handleThreadDelete} />
-            </>
-          )}
-          <Divider />
-          {/* Post list arranged according to post date descending */}
-          {thread.posts.length > 0 ? (
-            <div className="ml-5">
-              {thread.posts.map((post) => (
-                <PostCard
-                  key={post.pk}
-                  post={post}
-                  thread={thread}
+  if (thread) {
+    return (
+      <div className="bg-slate-200 min-h-full h-auto p-10">
+        {board && thread ? (
+          <div className="bg-white p-5">
+            {/* Board and Thread info */}
+            <Link to={`/topic/${params.topicPk}/board/${params.boardPk}`}>
+              <span>{board.name}</span>
+            </Link>
+            <h1 className="text-2xl font-bold mb-10 pb-2">{thread?.title}</h1>
+            {userModOrAdmin && isAunthenticated && (
+              <>
+                <LockThreadButton
+                  handleLockClick={handleLockClick}
+                  locked={thread.isLocked}
                 />
-              ))}
+                <DeleteButton handleDelete={handleThreadDelete} />
+              </>
+            )}
+            <Divider />
+            {/* Post list arranged according to post date descending */}
+            {thread.posts.length > 0 ? (
+              <div className="ml-5">
+                {thread.posts.map((post) => (
+                  <PostCard key={post.pk} post={post} thread={thread} />
+                ))}
+              </div>
+            ) : (
+              <div>No posts yet</div>
+            )}
+
+            {/* Pagination */}
+            <Paginator
+              handlePageClick={handlePageClick}
+              pageCount={pageCount}
+            />
+
+            {/* Reply form */}
+            <div>
+              {!thread.isLocked && isAunthenticated && userNotBanned && (
+                <PostForm
+                  threadPk={parseInt(params.threadPk)}
+                  thread={thread}
+                  token={token}
+                />
+              )}
+              {/* If user is banned, this shows instead of form */}
+              {!userNotBanned && isAunthenticated && (
+                <span>
+                  Banned user detected. You cannot post in this thread.
+                </span>
+              )}
             </div>
-          ) : (
-            <div>No posts yet</div>
-          )}
-
-          {/* Pagination */}
-          <Paginator handlePageClick={handlePageClick} pageCount={pageCount} />
-
-          {/* Reply form */}
-          <div>
-            {!thread.isLocked && isAunthenticated && userNotBanned && (
-              <PostForm
-                threadPk={parseInt(params.threadPk)}
-                thread={thread}
-                token={token}
-              />
-            )}
-            {/* If user is banned, this shows instead of form */}
-            {!userNotBanned && isAunthenticated && (
-              <span>Banned user detected. You cannot post in this thread.</span>
-            )}
           </div>
-        </div>
-      ) : (
-        <ErrorPage />
-      )}
-    </div>
-  );
+        ) : (
+          <ErrorPage />
+        )}
+      </div>
+    );
+  }
+  return <ErrorPage />;
 };
 
 export default observer(ThreadPage);

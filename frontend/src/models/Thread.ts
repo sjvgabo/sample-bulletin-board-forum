@@ -25,6 +25,9 @@ export default class Thread extends Model({
   lastReplied: prop<Date>(),
   lastRepliedUsername: prop<string>(),
 }) {
+  onInit() {
+    this.fetchPosts()
+  }
   @modelFlow
   fetchPosts = _async(function* (this: Thread, pageNumber: number = 1) {
 
