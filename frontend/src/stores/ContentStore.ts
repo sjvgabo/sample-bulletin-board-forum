@@ -22,28 +22,21 @@ export default class ContentStore extends Model({
       return [];
     }
 
-    let data: any;
+    let data: any = [];
     try {
       data = yield* _await(response.json());
     } catch (error) {
       console.error(error);
-      return [];
+      return;
     }
-
-    if (Array.isArray(data)) {
-      let tempTopicList: Topic[];
-      tempTopicList = [];
-      data.forEach((topic: TopicData) => {
-        tempTopicList.push(
+      this.topics = data.map(
+        (topic: TopicData) => 
           new Topic({
             pk: topic.pk,
             name: topic.name,
           })
-        );
-      });
-
-      this.topics = tempTopicList;
-    }
+      )
+    
   });
 
   // return a single topic through its pk
