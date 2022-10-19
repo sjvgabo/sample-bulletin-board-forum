@@ -7,7 +7,6 @@ type Props = {
   pageCount: number;
 };
 const Paginator: React.FC<Props> = ({ handlePageClick, pageCount }) => {
-  
   if (pageCount > 1) {
     return (
       <ReactPaginate

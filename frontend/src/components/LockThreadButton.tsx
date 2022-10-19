@@ -11,14 +11,14 @@ const LockThreadButton: React.FC<Props> = ({ handleLockClick, locked }) => {
     <div>
       {locked ? (
         <button
-          className="bg-green-600 text-white hover:bg-green-400 rounded-lg py-1 px-2"
+          className="text-xs bg-green-600 hover:bg-green-400 text-white p-1 rounded-md"
           onClick={handleLockClick}
         >
           UNLOCK THREAD
         </button>
       ) : (
         <button
-          className="bg-red-600 text-white hover:bg-red-400 rounded-lg py-1 px-2"
+          className="text-xs bg-red-600 hover:bg-red-400 text-white p-1 rounded-md"
           onClick={handleLockClick}
         >
           LOCK THREAD

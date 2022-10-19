@@ -44,6 +44,7 @@ type UserAPIData = {
   is_banned: boolean;
   user_posts: number[];
   avatar_url: string | undefined;
+  user_num_posts: number;
 };
 
 // Handles authentication and user management

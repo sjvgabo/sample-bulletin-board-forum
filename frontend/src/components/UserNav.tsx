@@ -13,7 +13,7 @@ const UserNav: React.FC = () => {
     store.accountsStore.logOutUser();
     navigate("/");
   };
-  
+
   if (isAuthenticated && user) {
     return (
       <div className="flex gap-5 items-center">

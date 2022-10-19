@@ -48,8 +48,11 @@ const ProfilePage: React.FC = () => {
       parseInt(params.userPk, 10) === store.accountsStore.authenticated_user?.pk
     );
     (async () => {
-      await store.accountsStore.fetchUser(parseInt(params.userPk));
-      await store.accountsStore.fetchPosts(parseInt(params.userPk), pageNumber);
+      await store.accountsStore.fetchUser(parseInt(params.userPk, 10));
+      await store.accountsStore.fetchPosts(
+        parseInt(params.userPk, 10),
+        pageNumber
+      );
       setUser(store.accountsStore.currentUser);
       if (postLength) {
         setPageCount(Math.ceil(postLength / defaultPageItems));

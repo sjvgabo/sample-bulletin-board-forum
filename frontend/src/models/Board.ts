@@ -74,7 +74,7 @@ export default class Board extends Model({
   };
 
   onAttachedToRootStore() {
-    this.fetchThreads()
+    this.fetchThreads();
   }
 
   @modelFlow

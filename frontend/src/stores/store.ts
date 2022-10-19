@@ -16,6 +16,6 @@ export default class Store extends Model({
 
   @computed
   get isUserBanned() {
-    return this.accountsStore.authenticated_user?.is_banned
+    return this.accountsStore.authenticated_user?.is_banned;
   }
 }

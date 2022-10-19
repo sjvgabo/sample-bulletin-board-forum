@@ -1,7 +1,7 @@
 import { observer } from "mobx-react-lite";
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import DeleteButton from "../components/DeleteButton";
+import DeleteThreadButton from "../components/DeleteThreadButton";
 import Divider from "../components/Divider";
 import { Loading } from "../components/Loading";
 import LockThreadButton from "../components/LockThreadButton";
@@ -78,15 +78,15 @@ const ThreadPage: React.FC = () => {
             <Link to={`/topic/${params.topicPk}/board/${params.boardPk}`}>
               <span>{board.name}</span>
             </Link>
-            <h1 className="text-2xl font-bold mb-10 pb-2">{thread?.title}</h1>
+            <h1 className="text-3xl font-bold mb-3 pb-2">{thread?.title}</h1>
             {userModOrAdmin && isAunthenticated && (
-              <>
+              <div className="flex gap-2">
                 <LockThreadButton
                   handleLockClick={handleLockClick}
                   locked={thread.isLocked}
                 />
-                <DeleteButton handleDelete={handleThreadDelete} />
-              </>
+                <DeleteThreadButton handleDelete={handleThreadDelete} />
+              </div>
             )}
             <Divider />
             {/* Post list arranged according to post date descending */}

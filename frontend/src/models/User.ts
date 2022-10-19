@@ -32,6 +32,7 @@ export default class User extends Model({
   user_posts: prop<number[]>(),
   posts: prop<Post[]>(() => []),
   avatar_url: prop<string | undefined>(),
+  user_num_posts: prop<number>(),
 }) {
   @modelFlow
   partialUpdateUser = _async(function* (

@@ -10,7 +10,7 @@ type Props = {
 
 const BoardCard: React.FC<Props> = ({ topicPk, board }) => (
   <Link to={`topic/${topicPk}/board/${board.pk}`}>
-    <div className="flex flex-col bg-slate-200 p-5 m-5 rounded-md">
+    <div className="flex flex-col bg-sky-100 py-3 px-5 m-5 rounded-sm">
       <span className="text-gray-800">{board.name}</span>
       <span className="text-sm text-gray-500">{board.description}</span>
       <span className="text-sm text-gray-500">

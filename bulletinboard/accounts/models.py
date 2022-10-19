@@ -1,9 +1,17 @@
-from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.db.models.functions import Coalesce
+from django.contrib.auth.models import AbstractUser
 
 
 def upload_to(instance, filename):
     return "images/{filename}".format(filename=filename)
+
+
+class UserManager(models.Manager):
+    def with_post_counts(self):
+        return self.annotate(
+            user_num_posts=Coalesce(models.Count("user_posts"), 0),
+        )
 
 
 class User(AbstractUser):
@@ -29,12 +37,13 @@ class User(AbstractUser):
         blank=True,
     )
     interests = models.TextField("Interest", max_length=200, blank=True)
-
     is_poster = models.BooleanField("Poster status", default=True)
     is_moderator = models.BooleanField("Moderator status", default=False)
     is_administrator = models.BooleanField("Administrator status", default=False)
     is_banned = models.BooleanField("Banned status", default=False)
     avatar_url = models.ImageField(upload_to=upload_to, blank=True, null=True)
+
+    objects = UserManager()
 
     USERNAME_FIELD = "username"
     REQUIRED_FIELDS = [

@@ -56,7 +56,7 @@ export default class Topic extends Model({
     return this.boards.find((board) => board.pk === boardPk);
   };
 
-  onInit () {
+  onInit() {
     this.fetchBoards();
   }
 

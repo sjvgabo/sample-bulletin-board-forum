@@ -26,7 +26,7 @@ const BoardForm: React.FC<Props> = ({ handleCreateBoard }) => {
     });
 
   return (
-    <form className="flex flex-col py-20 pr-32" onSubmit={handleSubmit}>
+    <form className="flex flex-col py-10 pr-32" onSubmit={handleSubmit}>
       <div>Create Board:</div>
       <label>Name</label>
       <input

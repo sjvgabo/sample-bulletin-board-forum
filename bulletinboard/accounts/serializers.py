@@ -77,12 +77,14 @@ class UserSerializer(BaseUserSerializer):
 
     user_posts = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
     avatar_url = serializers.ImageField(required=False)
+    user_num_posts = serializers.IntegerField(required=False)
 
     class Meta:
         model = User
         fields = [
             "pk",
             "user_posts",
+            "user_num_posts",
             "username",
             "first_name",
             "last_name",

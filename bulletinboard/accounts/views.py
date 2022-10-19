@@ -72,7 +72,7 @@ class UserViewSet(
     User viewset for users which allows updating their own profile (except for their user status such as is_poster and is_moderator)
     """
 
-    queryset = User.objects.all()
+    queryset = User.objects.with_post_counts()
     permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsUserOrReadOnly]
     serializer_class = UserSerializer
     parser_classes = (MultiPartParser, FormParser, JSONParser)

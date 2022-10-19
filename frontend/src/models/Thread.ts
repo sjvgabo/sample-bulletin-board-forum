@@ -25,12 +25,8 @@ export default class Thread extends Model({
   lastReplied: prop<Date>(),
   lastRepliedUsername: prop<string>(),
 }) {
-  onInit() {
-    this.fetchPosts()
-  }
   @modelFlow
   fetchPosts = _async(function* (this: Thread, pageNumber: number = 1) {
-
     let response: Response;
     try {
       response = yield* _await(
@@ -39,7 +35,7 @@ export default class Thread extends Model({
         )
       );
     } catch (error) {
-      alert("Error in fetching posts from the database")
+      alert("Error in fetching posts from the database");
       return;
     }
 
@@ -47,7 +43,7 @@ export default class Thread extends Model({
     try {
       data = yield* _await(response.json());
     } catch (error) {
-      alert("Error in parsing response data")
+      alert("Error in parsing response data");
       return;
     }
 

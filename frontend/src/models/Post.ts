@@ -1,4 +1,4 @@
-import { Model, model, prop, } from "mobx-keystone";
+import { Model, model, prop } from "mobx-keystone";
 
 @model("bulletinboard/Post")
 export default class Post extends Model({
