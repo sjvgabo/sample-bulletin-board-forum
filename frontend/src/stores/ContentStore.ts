@@ -29,14 +29,13 @@ export default class ContentStore extends Model({
       console.error(error);
       return;
     }
-      this.topics = data.map(
-        (topic: TopicData) => 
-          new Topic({
-            pk: topic.pk,
-            name: topic.name,
-          })
-      )
-    
+    this.topics = data.map(
+      (topic: TopicData) =>
+        new Topic({
+          pk: topic.pk,
+          name: topic.name,
+        })
+    );
   });
 
   // return a single topic through its pk

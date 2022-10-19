@@ -1,13 +1,14 @@
 from django.db import models
 from django.db.models.functions import Coalesce
 from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import UserManager
 
 
 def upload_to(instance, filename):
     return "images/{filename}".format(filename=filename)
 
 
-class UserManager(models.Manager):
+class CustomUserManager(UserManager):
     def with_post_counts(self):
         return self.annotate(
             user_num_posts=Coalesce(models.Count("user_posts"), 0),
@@ -43,7 +44,7 @@ class User(AbstractUser):
     is_banned = models.BooleanField("Banned status", default=False)
     avatar_url = models.ImageField(upload_to=upload_to, blank=True, null=True)
 
-    objects = UserManager()
+    objects = CustomUserManager()
 
     USERNAME_FIELD = "username"
     REQUIRED_FIELDS = [
