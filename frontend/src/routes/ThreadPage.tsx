@@ -71,14 +71,14 @@ const ThreadPage: React.FC = () => {
   }
   if (thread) {
     return (
-      <div className="bg-slate-200 min-h-full h-auto p-10">
+      <div className="bg-slate-200 min-h-full h-auto p-10 flex justify-center">
         {board && thread ? (
-          <div className="bg-white p-5">
+          <div className="bg-white p-5 max-w-5xl flex-1">
             {/* Board and Thread info */}
             <Link to={`/topic/${params.topicPk}/board/${params.boardPk}`}>
               <span>{board.name}</span>
             </Link>
-            <h1 className="text-3xl font-bold mb-3 pb-2">{thread?.title}</h1>
+            <h1 className="text-xl font-bold mb-3 pb-2">{thread?.title}</h1>
             {userModOrAdmin && isAunthenticated && (
               <div className="flex gap-2">
                 <LockThreadButton

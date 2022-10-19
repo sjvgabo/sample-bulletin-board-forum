@@ -1,9 +1,10 @@
 import { useFormik } from "formik";
 import { observer } from "mobx-react-lite";
-import React from "react";
+import React, { useState } from "react";
 import * as Yup from "yup";
 import Thread from "../models/Thread";
 import { useStore } from "../stores";
+import MarkdownGuideCard from "./MarkdownGuideCard";
 
 type Props = {
   threadPk: number;
@@ -13,7 +14,11 @@ type Props = {
 const PostForm: React.FC<Props> = ({ threadPk, thread, token }) => {
   const store = useStore();
   const authorPk = store.accountsStore.authenticated_user?.pk as number;
+  const [showMarkdownGuide, setShowMarkdownGuide] = useState(false);
 
+  const handleMarkdownClick = () => {
+    setShowMarkdownGuide(!showMarkdownGuide);
+  };
   const { handleSubmit, handleChange, values, errors, touched, resetForm } =
     useFormik({
       initialValues: {
@@ -46,6 +51,15 @@ const PostForm: React.FC<Props> = ({ threadPk, thread, token }) => {
       >
         Comment
       </button>
+      <div className="flex flex-col">
+        <button
+          className="text-center my-3 border-2 border-gray-400 hover:bg-gray-200 rounded-md mx-auto p-2"
+          onClick={handleMarkdownClick}
+        >
+          {showMarkdownGuide ? "Hide Markdown Guide" : "Show Markdown Guide"}
+        </button>
+        {showMarkdownGuide && <MarkdownGuideCard />}
+      </div>
     </form>
   );
 };

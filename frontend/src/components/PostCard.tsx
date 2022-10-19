@@ -1,6 +1,7 @@
 import { observer } from "mobx-react-lite";
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import ReactMarkdown from "react-markdown";
 import Post from "../models/Post";
 import Thread from "../models/Thread";
 import User from "../models/User";
@@ -8,7 +9,6 @@ import { useStore } from "../stores";
 import Avatar from "./Avatar";
 import TimeSince from "./TimeSince";
 import UserHoverCard from "./UserHoverCard";
-
 type Props = {
   post: Post;
   thread?: Thread;
@@ -54,7 +54,9 @@ const PostCard: React.FC<Props> = ({ post, thread }) => {
             <TimeSince date={post.date_created} />
           </div>
           <div>
-            <span className="text-lg">{post.message}</span>
+            <ReactMarkdown className="text-lg prose prose-slate">
+              {post.message}
+            </ReactMarkdown>
           </div>
         </div>
         {userPk === post.authorPk && (

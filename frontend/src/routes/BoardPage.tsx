@@ -53,8 +53,8 @@ const BoardPage: React.FC = () => {
   }, [board, pageNumber]);
 
   return (
-    <div className="bg-slate-200 h-auto min-h-full p-10">
-      <div className="bg-white p-10 flex flex-col ">
+    <div className="bg-slate-200 h-auto min-h-full p-10 flex justify-center">
+      <div className="bg-white p-10 flex flex-col max-w-5xl flex-1">
         <div className="mb-10">
           <span className="text-2xl text-gray-800 block">{board?.name}</span>
           {/* DELETE BOARD (Will only show if user is an administrator) */}

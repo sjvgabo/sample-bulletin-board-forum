@@ -9,7 +9,7 @@ const HomePage: React.FC = () => {
   const store = useStore();
   const topics = store.contentStore.topics;
   return (
-    <div className="h-auto min-h-full bg-slate-200 pt-10">
+    <div className="h-auto min-h-full bg-slate-200 pt-10 flex justify-center">
       <div className="">
         {topics &&
           topics.map((topic: Topic) => (
