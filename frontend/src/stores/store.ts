@@ -10,7 +10,6 @@ export default class Store extends Model({
 }) {
   @modelFlow
   load = _async(function* (this: Store) {
-    yield* _await(this.contentStore.fetchTopics());
     yield* _await(this.accountsStore.reAuthUser());
   });
 

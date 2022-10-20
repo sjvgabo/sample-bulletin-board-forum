@@ -21,9 +21,10 @@ const ThreadForm: React.FC<Props> = ({ board }) => {
         title: Yup.string().required("Title must not be empty"),
       }),
       onSubmit: async (values) => {
-        await board.createThread(
+        await store.contentStore.createThread(
           values.title,
           authorPk,
+          board.pk,
           store.accountsStore.token
         );
         resetForm();

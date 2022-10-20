@@ -28,26 +28,54 @@ const ThreadPage: React.FC = () => {
     topicPk: string;
     threadPk: string;
   };
-  const topic = store.contentStore.getTopic(parseInt(params.topicPk, 10));
-  const board = topic?.getBoard(parseInt(params.boardPk, 10));
-  const thread = board?.getThread(parseInt(params.threadPk, 10)) as Thread;
+  const board = store.contentStore?.getBoard(
+    parseInt(params.topicPk, 10),
+    parseInt(params.boardPk, 10)
+  );
+  const thread = store.contentStore?.getThread(
+    parseInt(params.boardPk, 10),
+    parseInt(params.threadPk, 10)
+  ) as Thread;
+  const posts = store.contentStore.posts[parseInt(params.threadPk, 10)];
   const [loading, setLoading] = useState(true);
   const [pageNumber, setPageNumber] = useState<number>(1);
   const [pageCount, setPageCount] = useState<number>(1);
   const itemPerPage = 20;
   useEffect(() => {
     (async () => {
-      await board?.fetchThread(parseInt(params.threadPk, 10));
-      if (thread) {
-        await thread.fetchPosts(pageNumber);
+      if (!board) {
+        await store.contentStore.fetchBoard(
+          parseInt(params.boardPk, 10),
+          parseInt(params.topicPk, 10)
+        );
+      }
+      if (!thread) {
+        await store.contentStore.fetchThread(
+          parseInt(params.boardPk, 10),
+          parseInt(params.threadPk, 10)
+        );
+      }
+      if (!posts) {
+        await store.contentStore.fetchPosts(
+          parseInt(params.threadPk, 10),
+          pageNumber
+        );
+      }
+      if (posts && thread) {
         setPageCount(Math.ceil(thread.noOfPosts / itemPerPage));
         setLoading(false);
       }
     })();
-
-    if (thread) {
-    }
-  }, [board, pageNumber, params.threadPk, thread]);
+  }, [
+    board,
+    pageNumber,
+    params.boardPk,
+    params.threadPk,
+    params.topicPk,
+    posts,
+    store.contentStore,
+    thread,
+  ]);
 
   const handleLockClick = async () => {
     if (thread) {
@@ -57,7 +85,7 @@ const ThreadPage: React.FC = () => {
 
   const handleThreadDelete = async () => {
     if (thread && board) {
-      await board?.deleteThread(thread.pk, token);
+      await store.contentStore?.deleteThread(thread.pk, token, board.pk);
       navigate(`/topic/${params.topicPk}/board/${params.boardPk}/`);
     }
   };
@@ -90,9 +118,9 @@ const ThreadPage: React.FC = () => {
             )}
             <Divider />
             {/* Post list arranged according to post date descending */}
-            {thread.posts.length > 0 ? (
+            {posts && posts.length > 0 ? (
               <div className="ml-5">
-                {thread.posts.map((post) => (
+                {posts.map((post) => (
                   <PostCard key={post.pk} post={post} thread={thread} />
                 ))}
               </div>

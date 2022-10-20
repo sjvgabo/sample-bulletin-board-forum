@@ -28,7 +28,13 @@ const PostForm: React.FC<Props> = ({ threadPk, thread, token }) => {
         message: Yup.string().trim().required("Message must not be empty"),
       }),
       onSubmit: async (values) => {
-        await thread.createPost(values.message, threadPk, authorPk, token);
+        await store.contentStore.createPost(
+          values.message,
+          threadPk,
+          authorPk,
+          thread.boardPk,
+          token
+        );
         resetForm();
       },
     });
@@ -55,6 +61,7 @@ const PostForm: React.FC<Props> = ({ threadPk, thread, token }) => {
         <button
           className="text-center my-3 border-2 border-gray-400 hover:bg-gray-200 rounded-md mx-auto p-2"
           onClick={handleMarkdownClick}
+          type="button"
         >
           {showMarkdownGuide ? "Hide Markdown Guide" : "Show Markdown Guide"}
         </button>

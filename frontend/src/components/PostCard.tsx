@@ -21,7 +21,7 @@ const PostCard: React.FC<Props> = ({ post, thread }) => {
   const [user, setUser] = useState<User>();
   const handleDelete = async () => {
     if (thread) {
-      await thread.deletePost(post.pk, token);
+      await store.contentStore.deletePost(post.pk, token, thread.pk);
     }
   };
 
