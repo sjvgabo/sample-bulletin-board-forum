@@ -56,10 +56,6 @@ export default class Topic extends Model({
     return this.boards.find((board) => board.pk === boardPk);
   };
 
-  onInit() {
-    this.fetchBoards();
-  }
-
   @modelFlow
   deleteBoard = _async(function* (this: Topic, boardPk: number, token: string) {
     let response: Response;

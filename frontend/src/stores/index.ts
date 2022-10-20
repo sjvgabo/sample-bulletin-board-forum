@@ -11,7 +11,11 @@ const useStore = () => React.useContext(StoreContext);
 const { Provider: StoreProvider } = StoreContext;
 
 const createStore = () => {
-  const contentStore = new ContentStore({});
+  const contentStore = new ContentStore({
+    threads: {},
+    boards: {},
+    posts: {},
+  });
   const accountsStore = new AccountsStore({});
   const store = new Store({
     contentStore,
