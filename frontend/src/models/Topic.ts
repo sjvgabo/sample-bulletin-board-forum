@@ -21,11 +21,13 @@ export default class Topic extends Model({
   fetchBoards = _async(function* (this: Topic, pageNumber: number = 1) {
     let response: Response;
     try {
-      response = yield* _await(
-        fetch(
-          `${process.env.REACT_APP_API_BASE_LINK}/content/topic/${this.pk}/boards?page=${pageNumber}`
-        )
-      );
+      response =
+        yield *
+        _await(
+          fetch(
+            `${process.env.REACT_APP_API_BASE_LINK}/content/board/?topic=${this.pk}`
+          )
+        );
     } catch (error) {
       console.log("FETCH ERROR:", error);
       return;

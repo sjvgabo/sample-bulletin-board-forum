@@ -1,13 +1,15 @@
 import { useFormik } from "formik";
 import { observer } from "mobx-react";
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router";
 import * as Yup from "yup";
 import { useStore } from "../stores";
+import getErrorMessage from "../utilities/getErrorMessage";
 
 const LoginForm: React.FC = () => {
   const navigate = useNavigate();
   const store = useStore();
+  const [error, setError] = useState<string>();
 
   const { handleSubmit, handleChange, values, touched, errors } = useFormik({
     initialValues: {
@@ -19,7 +21,11 @@ const LoginForm: React.FC = () => {
       password: Yup.string().required("Required"),
     }),
     onSubmit: async (values) => {
-      await store.accountsStore.authUser(values);
+      try {
+        await store.accountsStore.authUser(values);
+      } catch (error) {
+        setError(getErrorMessage(error))
+      }
       if (store.accountsStore.authenticated) {
         navigate("/");
       }
@@ -27,7 +33,7 @@ const LoginForm: React.FC = () => {
   });
 
   return (
-    <form className="flex flex-col" onSubmit={handleSubmit}>
+    <form className="flex flex-col" onSubmit={handleSubmit} onClick={() => setError(undefined)}>
       <div className="flex my-1">
         <label htmlFor="username">Username:</label>
         <input
@@ -62,6 +68,7 @@ const LoginForm: React.FC = () => {
       >
         Login
       </button>
+      {error && <div className="text-center my-2">Error: {error}</div>}
     </form>
   );
 };

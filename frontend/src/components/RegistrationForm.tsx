@@ -1,14 +1,16 @@
 import { useFormik } from "formik";
 import { observer } from "mobx-react-lite";
-import React from "react";
+import React, { useState } from "react";
 import * as Yup from "yup";
 import { useStore } from "../stores";
+import getErrorMessage from "../utilities/getErrorMessage";
 
 type Props = {
   handleNavigate: () => void;
 };
 const RegistrationForm: React.FC<Props> = ({ handleNavigate }) => {
   const store = useStore();
+  const [error, setError] = useState<string>();
 
   const { handleSubmit, handleChange, values, touched, errors, resetForm } =
     useFormik({
@@ -55,9 +57,14 @@ const RegistrationForm: React.FC<Props> = ({ handleNavigate }) => {
         website: Yup.string().max(50, "Max of 50 characters").notRequired(),
       }),
       onSubmit: async (values) => {
-        await store.accountsStore.createUser(values);
-        resetForm();
-        handleNavigate();
+        try {
+          await store.accountsStore.createUser(values);
+          resetForm();
+          handleNavigate();
+        } catch (error) {
+          setError(getErrorMessage(error));
+        }
+        
       },
     });
 
@@ -235,9 +242,12 @@ const RegistrationForm: React.FC<Props> = ({ handleNavigate }) => {
         type="submit"
       >
         Create Account
-      </button>
+      </button> 
+      {error && <div>Error in creating account. {error}</div>}
     </form>
+   
   );
+  
 };
 
 export default observer(RegistrationForm);

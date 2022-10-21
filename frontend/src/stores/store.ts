@@ -1,4 +1,3 @@
-import { computed } from "mobx";
 import { Model, model, modelFlow, prop, _async, _await } from "mobx-keystone";
 import AccountsStore from "./AccountsStore";
 import ContentStore from "./ContentStore";
@@ -12,9 +11,4 @@ export default class Store extends Model({
   load = _async(function* (this: Store) {
     yield* _await(this.accountsStore.reAuthUser());
   });
-
-  @computed
-  get isUserBanned() {
-    return this.accountsStore.authenticated_user?.is_banned;
-  }
 }

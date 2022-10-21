@@ -11,7 +11,6 @@ type TopicData = {
 
 export type ThreadData = {
   pk: number;
-  posts: number[];
   title: string;
   is_sticky: boolean;
   is_locked: boolean;
@@ -24,7 +23,6 @@ export type ThreadData = {
 };
 
 export type BoardData = {
-  threads: number[];
   pk: number;
   name: string;
   description: string;
@@ -95,49 +93,51 @@ export default class ContentStore extends Model({
   };
 
   @modelFlow
+  clearThreads = (boardPk: number) => {
+    delete this.threads[boardPk];
+  };
+
+  @modelFlow
   fetchThreads = _async(function* (
     this: ContentStore,
     boardPk: number,
     pageNumber: number = 1
   ) {
     let response: Response;
-    try {
-      response = yield* _await(
-        fetch(
-          `${process.env.REACT_APP_API_BASE_LINK}/content/board/${boardPk}/threads/?page=${pageNumber}`
-        )
-      );
-    } catch (error) {
-      alert("Error in fetching data from database.");
-      return;
-    }
+    response = yield* _await(
+      fetch(
+        `${process.env.REACT_APP_API_BASE_LINK}/content/thread/?board=${boardPk}&page=${pageNumber}`
+      )
+    );
+    let data: {
+      count: number;
+      next: string | undefined;
+      previous: string | undefined;
+      results: ThreadData[];
+    };
+    data = yield* _await(response.json());
 
-    let data: any = [];
-    try {
-      data = yield* _await(response.json());
-    } catch (error) {
-      alert("Error in parsing response data");
-      return;
-    }
     if (!this.threads) {
       this.threads = {};
     }
 
-    this.threads[boardPk] = data.map(
-      (thread: ThreadData) =>
-        new Thread({
-          boardPk: thread.board,
-          title: thread.title,
-          noOfPosts: thread.no_of_posts,
-          pk: thread.pk,
-          isSticky: thread.is_sticky,
-          isLocked: thread.is_locked,
-          authorPk: thread.author,
-          authorUsername: thread.author_username,
-          lastReplied: thread.last_replied,
-          lastRepliedUsername: thread.last_replied_user,
-        })
-    );
+    if (data.results) {
+      this.threads[boardPk] = data.results.map(
+        (thread: ThreadData) =>
+          new Thread({
+            boardPk: thread.board,
+            title: thread.title,
+            noOfPosts: thread.no_of_posts,
+            pk: thread.pk,
+            isSticky: thread.is_sticky,
+            isLocked: thread.is_locked,
+            authorPk: thread.author,
+            authorUsername: thread.author_username,
+            lastReplied: thread.last_replied,
+            lastRepliedUsername: thread.last_replied_user,
+          })
+      );
+    }
   });
 
   @modelFlow
@@ -147,20 +147,12 @@ export default class ContentStore extends Model({
     topicPk: number
   ) {
     let response: Response;
-    try {
-      response = yield* _await(
-        fetch(`${process.env.REACT_APP_API_BASE_LINK}/content/board/${boardPk}`)
-      );
-    } catch (error) {
-      return;
-    }
+    response = yield* _await(
+      fetch(`${process.env.REACT_APP_API_BASE_LINK}/content/board/${boardPk}`)
+    );
 
     let boardData: BoardData;
-    try {
-      boardData = yield* _await(response.json());
-    } catch (error) {
-      return;
-    }
+    boardData = yield* _await(response.json());
 
     let board: Board;
     board = new Board({
@@ -192,22 +184,12 @@ export default class ContentStore extends Model({
     threadPk: number
   ) {
     let response: Response;
-    try {
-      response = yield* _await(
-        fetch(
-          `${process.env.REACT_APP_API_BASE_LINK}/content/thread/${threadPk}`
-        )
-      );
-    } catch (error) {
-      return;
-    }
+    response = yield* _await(
+      fetch(`${process.env.REACT_APP_API_BASE_LINK}/content/thread/${threadPk}`)
+    );
 
     let threadData: ThreadData;
-    try {
-      threadData = yield* _await(response.json());
-    } catch (error) {
-      return;
-    }
+    threadData = yield* _await(response.json());
 
     let thread: Thread;
     thread = new Thread({
@@ -318,26 +300,16 @@ export default class ContentStore extends Model({
     pageNumber: number = 1
   ) {
     let response: Response;
-    try {
-      response = yield* _await(
-        fetch(
-          `${process.env.REACT_APP_API_BASE_LINK}/content/thread/${threadPk}/posts?page=${pageNumber}`
-        )
-      );
-    } catch (error) {
-      alert("Error in fetching posts from the database");
-      return;
-    }
+    response = yield* _await(
+      fetch(
+        `${process.env.REACT_APP_API_BASE_LINK}/content/post/?page=${pageNumber}&thread=${threadPk}`
+      )
+    );
 
     let data: any = [];
-    try {
-      data = yield* _await(response.json());
-    } catch (error) {
-      alert("Error in parsing response data");
-      return;
-    }
+    data = yield* _await(response.json());
 
-    this.posts[threadPk] = data.map(
+    this.posts[threadPk] = data.results.map(
       (post: PostData) =>
         new Post({
           authorPk: post.author,

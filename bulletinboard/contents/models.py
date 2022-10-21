@@ -9,9 +9,7 @@ User = get_user_model()
 
 class ThreadQuerySet(models.QuerySet):
     def with_post_counts(self):
-        return self.annotate(
-            no_of_posts=Coalesce(models.Count("posts"), 0)
-        )
+        return self.annotate(no_of_posts=Coalesce(models.Count("posts"), 0))
 
     def with_last_replied(self):
         latest = Post.objects.filter(thread=OuterRef("pk")).order_by("-date_created")
@@ -81,7 +79,9 @@ class Thread(models.Model):
 
 class Post(models.Model):
     author = models.ForeignKey(
-        User, related_name="user_posts", on_delete=models.CASCADE,
+        User,
+        related_name="user_posts",
+        on_delete=models.CASCADE,
         editable=False,
     )
     thread = models.ForeignKey(Thread, related_name="posts", on_delete=models.CASCADE)

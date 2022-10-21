@@ -32,7 +32,7 @@ const TopicCard: React.FC<Props> = ({ topic }) => {
   }
 
   return (
-    <div className="flex flex-col bg-white p-10 border-b-2 mx-10 mb-5">
+    <div className="flex flex-col bg-white p-10 border-b-2 mx-10 mb-5 min-w-fit">
       <div>
         <span className="text-3xl text-gray-800">{topic.name}</span>
         <Divider />

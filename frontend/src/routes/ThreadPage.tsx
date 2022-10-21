@@ -10,6 +10,7 @@ import PostCard from "../components/PostCard";
 import PostForm from "../components/PostForm";
 import Thread from "../models/Thread";
 import { useStore } from "../stores";
+import getErrorMessage from "../utilities/getErrorMessage";
 import ErrorPage from "./ErrorPage";
 
 const ThreadPage: React.FC = () => {
@@ -41,31 +42,37 @@ const ThreadPage: React.FC = () => {
   const [pageNumber, setPageNumber] = useState<number>(1);
   const [pageCount, setPageCount] = useState<number>(1);
   const itemPerPage = 20;
+  const [error, setError] = useState<string>();
   useEffect(() => {
-    (async () => {
-      if (!board) {
-        await store.contentStore.fetchBoard(
-          parseInt(params.boardPk, 10),
-          parseInt(params.topicPk, 10)
-        );
-      }
-      if (!thread) {
-        await store.contentStore.fetchThread(
-          parseInt(params.boardPk, 10),
-          parseInt(params.threadPk, 10)
-        );
-      }
-      if (!posts) {
-        await store.contentStore.fetchPosts(
-          parseInt(params.threadPk, 10),
-          pageNumber
-        );
-      }
-      if (posts && thread) {
-        setPageCount(Math.ceil(thread.noOfPosts / itemPerPage));
-        setLoading(false);
-      }
-    })();
+    try {
+      (async () => {
+        if (!board) {
+          await store.contentStore.fetchBoard(
+            parseInt(params.boardPk, 10),
+            parseInt(params.topicPk, 10)
+          );
+        }
+        if (!thread) { 
+          await store.contentStore.fetchThread(
+            parseInt(params.boardPk, 10),
+            parseInt(params.threadPk, 10)
+          );
+        }
+        if (!posts) {
+          await store.contentStore.fetchPosts(
+            parseInt(params.threadPk, 10),
+            pageNumber
+          );
+        }
+        if (posts && thread) {
+          setPageCount(Math.ceil(thread.noOfPosts / itemPerPage));
+          setLoading(false);
+        }
+      })();
+    } catch (error) {
+      const errorString = getErrorMessage(error);
+      setError(errorString);
+    }
   }, [
     board,
     pageNumber,
@@ -90,8 +97,14 @@ const ThreadPage: React.FC = () => {
     }
   };
 
-  const handlePageClick = (selectedItem: { selected: number }): void => {
+  const handlePageClick = async (selectedItem: {
+    selected: number;
+  }): Promise<void> => {
     setPageNumber(selectedItem.selected + 1);
+    await store.contentStore.fetchPosts(
+      parseInt(params.threadPk, 10),
+      selectedItem.selected + 1
+    );
   };
 
   if (loading) {
@@ -157,7 +170,8 @@ const ThreadPage: React.FC = () => {
       </div>
     );
   }
-  return <ErrorPage />;
+  if (error) return <ErrorPage message={error} />;
+  return <div></div>
 };
 
 export default observer(ThreadPage);

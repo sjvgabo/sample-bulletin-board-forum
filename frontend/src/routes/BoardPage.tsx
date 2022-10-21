@@ -36,8 +36,12 @@ const BoardPage: React.FC = () => {
     navigate("/");
   };
 
-  const handlePageClick = (selectedItem: { selected: number }): void => {
+  const handlePageClick = async (selectedItem: { selected: number }): Promise<void> => {
     setPageNumber(selectedItem.selected + 1);
+    await store.contentStore.fetchThreads(
+      parseInt(params.boardPk, 10),
+      pageNumber
+    );
   };
 
   const handleChangeTopic = async (topicPk: number) => {

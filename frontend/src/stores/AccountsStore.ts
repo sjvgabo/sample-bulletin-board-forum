@@ -38,11 +38,9 @@ type UserAPIData = {
   gender: string;
   interests: string;
   website: string;
-  is_poster: boolean;
   is_moderator: boolean;
   is_administrator: boolean;
   is_banned: boolean;
-  user_posts: number[];
   avatar_url: string | undefined;
   user_num_posts: number;
 };
@@ -64,7 +62,6 @@ export default class AccountsStore extends Model({
       date_of_birth: moment(new Date(data.date_of_birth)).format("YYYY-MM-DD"),
     };
     let response: Response;
-    try {
       response = yield* _await(
         fetch(`${process.env.REACT_APP_API_BASE_LINK}/auth/registration/`, {
           method: "POST",
@@ -74,10 +71,6 @@ export default class AccountsStore extends Model({
           body: JSON.stringify(newUser),
         })
       );
-    } catch (error) {
-      alert("Fetch Error!");
-      return;
-    }
 
     if (response.ok) {
       alert("Account successfully created");
@@ -92,7 +85,6 @@ export default class AccountsStore extends Model({
   @modelFlow
   authUser = _async(function* (this: AccountsStore, loginData: LoginDataInput) {
     let response: Response;
-    try {
       response = yield* _await(
         fetch(`${process.env.REACT_APP_API_BASE_LINK}/auth/login/`, {
           method: "POST",
@@ -102,16 +94,9 @@ export default class AccountsStore extends Model({
           body: JSON.stringify(loginData),
         })
       );
-    } catch (error) {
-      return;
-    }
 
     let data: any;
-    try {
       data = yield* _await(response.json());
-    } catch (error) {
-      alert("Data parsing error");
-    }
 
     if (data.user) {
       yield* _await(
@@ -133,9 +118,7 @@ export default class AccountsStore extends Model({
       this.authenticated_user = data.user;
       this.token = data.key;
       return;
-    } else {
-      alert("Login failed. Wrong password / username");
-    }
+    } 
   });
 
   @modelFlow
@@ -244,14 +227,14 @@ export default class AccountsStore extends Model({
   @modelFlow
   fetchPosts = _async(function* (
     this: AccountsStore,
-    userPk: number,
+    username: string,
     pageNumber: number = 1
   ) {
     let response: Response;
     try {
       response = yield* _await(
         fetch(
-          `${process.env.REACT_APP_API_BASE_LINK}/auth/users/${userPk}/posts?page=${pageNumber}`
+          `${process.env.REACT_APP_API_BASE_LINK}/content/post/?username=${username}&page=${pageNumber}`
         )
       );
     } catch (error) {
@@ -259,14 +242,14 @@ export default class AccountsStore extends Model({
       return;
     }
 
-    let data: any = [];
+    let data: any = {};
     try {
       data = yield* _await(response.json());
     } catch (error) {
       console.error(error);
       return;
     }
-    this.currentPosts = data.map(
+    this.currentPosts = data.results.map(
       (post: PostData) =>
         new Post({
           authorPk: post.author,

@@ -54,7 +54,7 @@ const PostCard: React.FC<Props> = ({ post, thread }) => {
             <TimeSince date={post.date_created} />
           </div>
           <div>
-            <ReactMarkdown className="text-lg prose prose-slate">
+            <ReactMarkdown className="text-lg prose prose-slate whitespace-pre-line">
               {post.message}
             </ReactMarkdown>
           </div>

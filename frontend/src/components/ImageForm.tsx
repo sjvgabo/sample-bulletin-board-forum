@@ -6,11 +6,19 @@ const ImageForm: React.FC = () => {
   const store = useStore();
   const [image, setImage] = useState<File>();
   const [toUpload, setToUpload] = useState(false);
+  const [error, setError] = useState(false);
 
   const handleFileUpload = async () => {
     setToUpload(false);
     if (image) {
-      await store.accountsStore.uploadAvatar(image);
+      try {
+        await store.accountsStore.uploadAvatar(image);
+      } 
+      catch (error) {
+        setError(true)
+
+      }
+      
     }
   };
 
@@ -48,6 +56,7 @@ const ImageForm: React.FC = () => {
       >
         Upload Avatar
       </button>
+      {error && <div>Error uploading image! </div>}
     </div>
   );
 };

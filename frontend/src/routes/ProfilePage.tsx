@@ -26,7 +26,7 @@ const ProfilePage: React.FC = () => {
   const [pageNumber, setPageNumber] = useState<number>(1);
   const defaultPageItems = 20;
   const [pageCount, setPageCount] = useState<number>(1);
-  const postLength = user?.user_posts.length || 0;
+  const postLength = user?.user_num_posts || 0;
   const handleEditButton = () => {
     setEdit(true);
   };
@@ -48,26 +48,23 @@ const ProfilePage: React.FC = () => {
       parseInt(params.userPk, 10) === store.accountsStore.authenticated_user?.pk
     );
     (async () => {
-      await store.accountsStore.fetchUser(parseInt(params.userPk, 10));
-      await store.accountsStore.fetchPosts(
-        parseInt(params.userPk, 10),
-        pageNumber
-      );
-      setUser(store.accountsStore.currentUser);
+      if (!user) {
+        await store.accountsStore.fetchUser(parseInt(params.userPk, 10));
+      }
+      if (user) {
+        await store.accountsStore.fetchPosts(
+          user.username,
+          pageNumber
+        );
+      }
+
       if (postLength) {
         setPageCount(Math.ceil(postLength / defaultPageItems));
       }
-
+      setUser(store.accountsStore.currentUser);
       setLoading(false);
     })();
-  }, [
-    params.userPk,
-    store.accountsStore.authenticated_user?.pk,
-    edit,
-    pageNumber,
-    store.accountsStore,
-    postLength,
-  ]);
+  }, [params.userPk, store.accountsStore.authenticated_user?.pk, edit, pageNumber, store.accountsStore, postLength, user]);
 
   if (loading) <Loading />;
   if (user) {

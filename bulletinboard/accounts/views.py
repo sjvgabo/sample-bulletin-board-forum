@@ -75,6 +75,7 @@ class UserViewSet(
     serializer_class = UserSerializer
     parser_classes = (MultiPartParser, FormParser, JSONParser)
 
+
 class BanUserViewSet(
     viewsets.GenericViewSet,
     mixins.UpdateModelMixin,

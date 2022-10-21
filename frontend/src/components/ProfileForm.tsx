@@ -46,6 +46,7 @@ const ProfileForm: React.FC<Props> = ({ user, handleEdit }) => {
       }),
       onSubmit: async (values) => {
         await user.partialUpdateUser(values, token);
+        await store.accountsStore.fetchUser(user.pk);
         resetForm();
         handleEdit(false);
       },
