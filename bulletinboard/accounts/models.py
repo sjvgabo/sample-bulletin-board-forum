@@ -38,7 +38,6 @@ class User(AbstractUser):
         blank=True,
     )
     interests = models.TextField("Interest", max_length=200, blank=True)
-    is_poster = models.BooleanField("Poster status", default=True)
     is_moderator = models.BooleanField("Moderator status", default=False)
     is_administrator = models.BooleanField("Administrator status", default=False)
     is_banned = models.BooleanField("Banned status", default=False)

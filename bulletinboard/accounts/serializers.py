@@ -75,7 +75,6 @@ class UserSerializer(BaseUserSerializer):
     Serializes the user data upon logging in / fetching data from UserViewSet
     """
 
-    user_posts = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
     avatar_url = serializers.ImageField(required=False)
     user_num_posts = serializers.IntegerField(required=False)
 
@@ -83,7 +82,6 @@ class UserSerializer(BaseUserSerializer):
         model = User
         fields = [
             "pk",
-            "user_posts",
             "user_num_posts",
             "username",
             "first_name",
@@ -96,7 +94,6 @@ class UserSerializer(BaseUserSerializer):
             "gender",
             "interests",
             "website",
-            "is_poster",
             "is_moderator",
             "is_administrator",
             "is_banned",
@@ -109,11 +106,9 @@ class UserSerializer(BaseUserSerializer):
             "first_name",
             "last_name",
             "email",
-            "is_poster",
             "is_moderator",
             "is_administrator",
             "is_banned",
-            "user_posts",
         ]
 
 

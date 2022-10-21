@@ -8,9 +8,7 @@ from rest_framework.decorators import action
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from rest_framework.views import APIView
 from bulletinboard.accounts.permissions import IsOtherUserOrReadOnly, IsUserOrReadOnly
-from bulletinboard.contents.models import Post
 from bulletinboard.contents.permissions import (
-    IsAdministratorOrReadOnly,
     IsModeratorOrAdministratorOrReadOnly,
 )
 from bulletinboard.contents.serializers import PostSerializer
@@ -76,20 +74,6 @@ class UserViewSet(
     permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsUserOrReadOnly]
     serializer_class = UserSerializer
     parser_classes = (MultiPartParser, FormParser, JSONParser)
-
-    @action(detail=True)
-    def posts(self, request, pk=None):
-        """
-        Returns paginated threads under the board (Default: 20 items)
-        """
-        user = self.get_object()
-        posts = Post.objects.filter(author=user).order_by("-date_created")
-        paginated_posts = self.paginate_queryset(posts)
-        user_posts_json = PostSerializer(
-            paginated_posts, many=True, context={"request": request}
-        )
-        return Response(user_posts_json.data)
-
 
 class BanUserViewSet(
     viewsets.GenericViewSet,

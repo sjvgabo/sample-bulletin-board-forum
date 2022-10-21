@@ -7,14 +7,21 @@ from bulletinboard.contents.managers import BoardManager
 User = get_user_model()
 
 
-class ThreadManager(models.Manager):
-    def with_post_counts_and_latest_replied(self):
+class ThreadQuerySet(models.QuerySet):
+    def with_post_counts(self):
+        return self.annotate(
+            no_of_posts=Coalesce(models.Count("posts"), 0)
+        )
+
+    def with_last_replied(self):
         latest = Post.objects.filter(thread=OuterRef("pk")).order_by("-date_created")
         return self.annotate(
-            no_of_posts=Coalesce(models.Count("posts"), 0),
             last_replied=Subquery(latest.values("date_created")[:1]),
             last_replied_user=Subquery(latest.values("author_username")[:1]),
         )
+
+    def with_post_counts_and_last_replied(self):
+        return self.with_post_counts().with_last_replied()
 
 
 class Topic(models.Model):
@@ -49,6 +56,7 @@ class Thread(models.Model):
         User,
         related_name="threads",
         on_delete=models.CASCADE,
+        editable=False,
     )
     is_sticky = models.BooleanField(default=False)
     is_locked = models.BooleanField(default=False)
@@ -56,7 +64,7 @@ class Thread(models.Model):
         "Author username", max_length=150, blank=True, editable=False, null=True
     )
 
-    objects = ThreadManager()
+    objects = ThreadQuerySet.as_manager()
 
     class Meta:
         ordering = [
@@ -73,7 +81,8 @@ class Thread(models.Model):
 
 class Post(models.Model):
     author = models.ForeignKey(
-        User, related_name="user_posts", on_delete=models.CASCADE
+        User, related_name="user_posts", on_delete=models.CASCADE,
+        editable=False,
     )
     thread = models.ForeignKey(Thread, related_name="posts", on_delete=models.CASCADE)
     message = models.TextField(max_length=500)

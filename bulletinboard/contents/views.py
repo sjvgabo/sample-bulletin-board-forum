@@ -1,22 +1,10 @@
-import logging
 from bulletinboard.contents import serializers
 from bulletinboard.contents.models import Board, Post, Thread, Topic
 from bulletinboard.contents.permissions import (
     IsAdministratorOrReadOnly,
-    IsModeratorOrAdministrator,
-    IsNotBanned,
-    IsNotBannedOrReadOnly,
-    IsOwnerOrReadOnly,
-    IsModeratorOrAdministratorOrReadOnly,
-)
-from bulletinboard.contents.serializers import (
-    BoardSerializer,
-    PostSerializer,
-    ThreadSerializer,
+    IsNotBannedOrReadDeleteOnly,
 )
 from rest_framework import permissions, viewsets
-from rest_framework.decorators import action
-from rest_framework.response import Response
 
 
 class TopicViewSet(viewsets.ReadOnlyModelViewSet):
@@ -27,17 +15,6 @@ class TopicViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Topic.objects.all()
     serializer_class = serializers.TopicSerializer
     pagination_class = None
-
-    @action(detail=True)
-    def boards(self, request, pk=None):
-        """
-        Returns all boards under a topic
-        """
-        topic = self.get_object()
-        board_list = Board.objects.with_thread_post_counts().filter(topic=topic)
-        board_json = BoardSerializer(board_list, many=True)
-        return Response(board_json.data)
-
 
 class BoardViewSet(viewsets.ModelViewSet):
     """
@@ -50,34 +27,15 @@ class BoardViewSet(viewsets.ModelViewSet):
         IsAdministratorOrReadOnly,
     ]
     serializer_class = serializers.BoardSerializer
+    pagination_class = None # disable pagination to display all boards in homepage
 
-    @action(detail=True)
-    def threads(self, request, pk=None):
-        """
-        Returns paginated threads under the board (Default: 20 items)
-        """
-        board = self.get_object()
-        threads = (
-            Thread.objects.with_post_counts_and_latest_replied()
-            .filter(board=board)
-            .order_by("-is_sticky", "-last_replied")
-        )
-        paginated_threads = self.paginate_queryset(threads)
-        threads_json = ThreadSerializer(paginated_threads, many=True)
-        return Response(threads_json.data)
+    def get_queryset(self):
+        queryset = Board.objects.with_thread_post_counts()
+        topic_pk = self.request.query_params.get('topic')
+        if topic_pk is not None:
+            queryset = Board.objects.filter(topic=topic_pk)
 
-    def get_permissions(self):
-        """
-        Instantiates and returns the list of permissions that this view requires.
-        """
-        if self.action in ["create", "delete", "update", "partial_update"]:
-            permission_classes = [
-                permissions.IsAuthenticatedOrReadOnly,
-                IsAdministratorOrReadOnly,
-            ]
-        else:
-            permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-        return [permission() for permission in permission_classes]
+        return queryset
 
 
 class ThreadViewSet(viewsets.ModelViewSet):
@@ -85,52 +43,33 @@ class ThreadViewSet(viewsets.ModelViewSet):
     Thread viewset
     """
 
-    queryset = Thread.objects.with_post_counts_and_latest_replied().order_by(
-        "-last_replied"
-    )
     serializer_class = serializers.ThreadSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsNotBannedOrReadDeleteOnly]
 
-    @action(detail=True)
-    def posts(self, request, pk=None):
-        """_summary_
-          Returns a paginated queryset of a the thread's posts (Default: 20 items)
-        Args:
-            request (_type_): _description_
-            pk (_type_, optional): _description_. Defaults to None.
+    def get_queryset(self):
+        queryset = Thread.objects.with_post_counts_and_last_replied().order_by("-is_sticky","-last_replied")
 
-        Returns:
-            _type_: _description_
-        """
-        thread = self.get_object()
-        posts = Post.objects.filter(thread=thread)
-        paginated_posts = self.paginate_queryset(posts)
-        posts_json = PostSerializer(
-            paginated_posts, many=True, context={"request": request}
-        )
-        return Response(posts_json.data)
+        # only administrators or moderators can edit threads
+        if self.action in ["update", "partial_update"] and not self.request.user.is_moderator and not self.request.user.is_administrator:
+            queryset = queryset.none()
 
-    def get_permissions(self):
-        """
-        Instantiates and returns the list of permissions that this view requires.
+        # users can only delete their own threads
+        elif self.action in ["destroy"] and not self.request.user.is_moderator and not self.request.user.is_administrator:
+                queryset = queryset.filter(author=self.request.user)
 
-        """
-        if self.action == "destroy":
-            permission_classes = [
-                permissions.IsAuthenticatedOrReadOnly,
-                (IsOwnerOrReadOnly | IsModeratorOrAdministrator),
-            ]
-        elif self.action in ["update", "partial_update"]:
-            permission_classes = [IsModeratorOrAdministratorOrReadOnly]
-        elif self.action == "create":
-            permission_classes = [
-                permissions.IsAuthenticatedOrReadOnly,
-                IsNotBanned,
-                IsOwnerOrReadOnly,
-            ]
-        else:
-            permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-        return [permission() for permission in permission_classes]
+        # For fetching a thread's posts
+        board_pk = self.request.query_params.get('board')
+        if board_pk is not None:
+            queryset = queryset.filter(board=board_pk)
+
+        return queryset
+
+    def perform_create(self, serializer):
+        # Automatically assigns a new thread to the user
+        kwargs = {
+            'author': self.request.user
+        }
+        serializer.save(**kwargs)
 
 
 class PostViewSet(viewsets.ModelViewSet):
@@ -138,10 +77,35 @@ class PostViewSet(viewsets.ModelViewSet):
     Post viewset
     """
 
-    queryset = Post.objects.all()
     permission_classes = [
-        permissions.IsAuthenticatedOrReadOnly,
-        IsOwnerOrReadOnly,
-        IsNotBannedOrReadOnly,
+        permissions.IsAuthenticatedOrReadOnly, 
+        IsNotBannedOrReadDeleteOnly,
     ]
     serializer_class = serializers.PostSerializer
+
+    def get_queryset(self):
+        # returns all post for GET methods
+        if self.action in ["retrieve", "list"]: 
+            queryset = Post.objects.all()
+        # return only the posts of the requesting user for other methods
+        else:
+            queryset = Post.objects.filter(author=self.request.user)
+
+        # For fetching a user's posts
+        username = self.request.query_params.get('username')
+        if username is not None:
+            queryset = queryset.filter(author_username=username).order_by("-date_created")
+
+        # For fetching a thread's posts
+        thread_pk = self.request.query_params.get('thread')
+        if thread_pk is not None:
+            queryset = queryset.filter(thread=thread_pk)
+
+        return queryset
+
+    def perform_create(self, serializer):
+        # automatically assigns the author of the post to the requesting user
+        kwargs = {
+            'author': self.request.user
+        }
+        serializer.save(**kwargs)
