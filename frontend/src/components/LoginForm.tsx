@@ -5,6 +5,7 @@ import { useNavigate } from "react-router";
 import * as Yup from "yup";
 import { useStore } from "../stores";
 import getErrorMessage from "../utilities/getErrorMessage";
+import ErrorMessage from "./ErrorMessage";
 
 const LoginForm: React.FC = () => {
   const navigate = useNavigate();
@@ -24,7 +25,7 @@ const LoginForm: React.FC = () => {
       try {
         await store.accountsStore.authUser(values);
       } catch (error) {
-        setError(getErrorMessage(error))
+        setError(getErrorMessage(error));
       }
       if (store.accountsStore.authenticated) {
         navigate("/");
@@ -33,7 +34,11 @@ const LoginForm: React.FC = () => {
   });
 
   return (
-    <form className="flex flex-col" onSubmit={handleSubmit} onClick={() => setError(undefined)}>
+    <form
+      className="flex flex-col"
+      onSubmit={handleSubmit}
+      onClick={() => setError(undefined)}
+    >
       <div className="flex my-1">
         <label htmlFor="username">Username:</label>
         <input
@@ -68,7 +73,11 @@ const LoginForm: React.FC = () => {
       >
         Login
       </button>
-      {error && <div className="text-center my-2">Error: {error}</div>}
+      {error && (
+        <div className="text-center my-2">
+          <ErrorMessage message={error} />
+        </div>
+      )}
     </form>
   );
 };

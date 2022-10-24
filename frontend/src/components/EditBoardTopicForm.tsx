@@ -1,13 +1,15 @@
 import { useFormik } from "formik";
 import { observer } from "mobx-react-lite";
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router";
 import * as Yup from "yup";
 import Topic from "../models/Topic";
 import { useStore } from "../stores";
+import getErrorMessage from "../utilities/getErrorMessage";
+import ErrorMessage from "./ErrorMessage";
 
 type Props = {
-  handleChangeTopic: (topicPk: number) => void;
+  handleChangeTopic: (topicPk: number) => Promise<void>;
   topicPk: number;
 };
 const EditBoardTopicForm: React.FC<Props> = ({
@@ -16,6 +18,7 @@ const EditBoardTopicForm: React.FC<Props> = ({
 }) => {
   const store = useStore();
   const navigate = useNavigate();
+  const [error, setError] = useState<string>();
   const { handleSubmit, handleChange, values } = useFormik({
     initialValues: {
       topic: topicPk,
@@ -23,9 +26,13 @@ const EditBoardTopicForm: React.FC<Props> = ({
     validationSchema: Yup.object({
       topic: Yup.number().required("Message must not be empty"),
     }),
-    onSubmit: (values) => {
-      handleChangeTopic(values.topic);
-      navigate("/");
+    onSubmit: async (values) => {
+      try {
+        await handleChangeTopic(values.topic);
+        navigate("/");
+      } catch (err) {
+        setError(getErrorMessage(err));
+      }
     },
   });
   return (
@@ -45,6 +52,7 @@ const EditBoardTopicForm: React.FC<Props> = ({
           ))}
         </select>
       </label>
+      {error && <ErrorMessage message={error} />}
     </form>
   );
 };

@@ -45,26 +45,23 @@ export default class User extends Model({
       ),
     };
     let response: Response;
-    try {
-      response = yield* _await(
-        fetch(`${process.env.REACT_APP_API_BASE_LINK}/auth/users/${this.pk}/`, {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Token ${token}`,
-          },
-          body: JSON.stringify(updateUserData),
-        })
-      );
-    } catch (error) {
-      alert("Update Error: Error in database.");
-      return;
-    }
+    response = yield* _await(
+      fetch(`${process.env.REACT_APP_API_BASE_LINK}/auth/users/${this.pk}/`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Token ${token}`,
+        },
+        body: JSON.stringify(updateUserData),
+      })
+    );
 
     if (response.ok) {
       alert("Account updated");
     } else {
-      alert(response.json);
+      let error: string;
+      error = yield* _await(response.text());
+      throw error;
     }
   });
 
@@ -74,29 +71,26 @@ export default class User extends Model({
       is_banned: true,
     };
     let response: Response;
-    try {
-      response = yield* _await(
-        fetch(
-          `${process.env.REACT_APP_API_BASE_LINK}/auth/ban-user/${this.pk}/`,
-          {
-            method: "PATCH",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Token ${token}`,
-            },
-            body: JSON.stringify(banData),
-          }
-        )
-      );
-    } catch (error) {
-      alert("Update Error: Error in database.");
-      return;
-    }
+    response = yield* _await(
+      fetch(
+        `${process.env.REACT_APP_API_BASE_LINK}/auth/ban-user/${this.pk}/`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Token ${token}`,
+          },
+          body: JSON.stringify(banData),
+        }
+      )
+    );
 
     if (response.ok) {
       alert("Account Banned");
     } else {
-      alert("Error in banning account.");
+      let error: string;
+      error = yield* _await(response.text());
+      throw error;
     }
   });
 }

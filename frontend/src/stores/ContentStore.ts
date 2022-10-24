@@ -62,29 +62,26 @@ export default class ContentStore extends Model({
   @modelFlow
   fetchTopics = _async(function* (this: ContentStore) {
     let response: Response;
-    try {
-      response = yield* _await(
-        fetch(`${process.env.REACT_APP_API_BASE_LINK}/content/topic/`)
-      );
-    } catch (error) {
-      console.error(error);
-      return [];
-    }
-
-    let data: any = [];
-    try {
-      data = yield* _await(response.json());
-    } catch (error) {
-      console.error(error);
-      return;
-    }
-    this.topics = data.map(
-      (topic: TopicData) =>
-        new Topic({
-          pk: topic.pk,
-          name: topic.name,
-        })
+    response = yield* _await(
+      fetch(`${process.env.REACT_APP_API_BASE_LINK}/content/topic/`)
     );
+
+    if (response.ok) {
+      let data: any = [];
+      data = yield* _await(response.json());
+
+      this.topics = data.map(
+        (topic: TopicData) =>
+          new Topic({
+            pk: topic.pk,
+            name: topic.name,
+          })
+      );
+    } else {
+      let error: string;
+      error = yield* _await(response.text());
+      throw error;
+    }
   });
 
   // return a single topic through its pk
@@ -230,31 +227,26 @@ export default class ContentStore extends Model({
     token: string
   ) {
     let response: Response;
-    try {
-      response = yield* _await(
-        fetch(`${process.env.REACT_APP_API_BASE_LINK}/content/thread/`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Token ${token}`,
-          },
-          body: JSON.stringify({
-            author: authorPk,
-            title: title,
-            board: boardPk,
-          }),
-        })
-      );
-    } catch (error) {
-      alert("Error creating new post");
-      return;
-    }
+    response = yield* _await(
+      fetch(`${process.env.REACT_APP_API_BASE_LINK}/content/thread/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Token ${token}`,
+        },
+        body: JSON.stringify({
+          author: authorPk,
+          title: title,
+          board: boardPk,
+        }),
+      })
+    );
 
     if (response.ok) {
       alert("Succesfully created thread");
       yield* _await(this.fetchThreads(boardPk));
     } else {
-      alert("Error in database. Failed to created thread");
+      throw Error("Failed to create new thread. Re-check values");
     }
   });
 
@@ -266,29 +258,26 @@ export default class ContentStore extends Model({
     boardPk: number
   ) {
     let response: Response;
-    try {
-      response = yield* _await(
-        fetch(
-          `${process.env.REACT_APP_API_BASE_LINK}/content/thread/${threadPk}/`,
-          {
-            method: "DELETE",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Token ${token}`,
-            },
-          }
-        )
-      );
-    } catch (error) {
-      alert("Error in deleting the thread");
-      return;
-    }
+    response = yield* _await(
+      fetch(
+        `${process.env.REACT_APP_API_BASE_LINK}/content/thread/${threadPk}/`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Token ${token}`,
+          },
+        }
+      )
+    );
 
     if (response.ok) {
       alert("Thread deleted");
       yield* _await(this.fetchThreads(boardPk));
     } else {
-      alert("Thread failed to be deleted. Check authorization.");
+      let error: string;
+      error = yield* _await(response.text());
+      throw error;
     }
   });
 
@@ -333,25 +322,21 @@ export default class ContentStore extends Model({
     token: string
   ) {
     let response: Response;
-    try {
-      response = yield* _await(
-        fetch(`${process.env.REACT_APP_API_BASE_LINK}/content/post/`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Token ${token}`,
-          },
-          body: JSON.stringify({
-            author: authorPk,
-            message: message,
-            thread: threadPk,
-          }),
-        })
-      );
-    } catch (error) {
-      alert("Error creating new post");
-      return;
-    }
+    response = yield* _await(
+      fetch(`${process.env.REACT_APP_API_BASE_LINK}/content/post/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Token ${token}`,
+        },
+        body: JSON.stringify({
+          author: authorPk,
+          message: message,
+          thread: threadPk,
+        }),
+      })
+    );
+
     if (response.ok) {
       yield* _await(this.fetchPosts(threadPk));
       yield* _await(this.fetchThreads(boardPk));
@@ -366,28 +351,22 @@ export default class ContentStore extends Model({
     threadPk: number
   ) {
     let response: Response;
-    try {
-      response = yield* _await(
-        fetch(
-          `${process.env.REACT_APP_API_BASE_LINK}/content/post/${postPk}/`,
-          {
-            method: "DELETE",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Token ${token}`,
-            },
-          }
-        )
-      );
-    } catch (error) {
-      alert("Database Error: Error in deleting the post");
-      return;
-    }
+    response = yield* _await(
+      fetch(`${process.env.REACT_APP_API_BASE_LINK}/content/post/${postPk}/`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Token ${token}`,
+        },
+      })
+    );
 
     if (response.ok) {
       yield* _await(this.fetchPosts(threadPk));
     } else {
-      alert("Error in deleting the post");
+      let error: string;
+      error = yield* _await(response.text());
+      throw error;
     }
   });
 }

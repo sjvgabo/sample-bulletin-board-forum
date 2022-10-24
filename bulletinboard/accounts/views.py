@@ -75,6 +75,18 @@ class UserViewSet(
     serializer_class = UserSerializer
     parser_classes = (MultiPartParser, FormParser, JSONParser)
 
+    @action(detail=True, methods=["PATCH"])
+    def remove_avatar(self, request, pk=None):
+        try:
+            user = self.get_object()
+            user.avatar_url.delete()
+            user.save()
+            serializer = UserSerializer(user)
+
+            return Response(serializer.data, status=status.HTTP_206_PARTIAL_CONTENT)
+        except Exception as e:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
 
 class BanUserViewSet(
     viewsets.GenericViewSet,

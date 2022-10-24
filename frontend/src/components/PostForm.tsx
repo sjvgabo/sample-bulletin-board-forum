@@ -4,6 +4,8 @@ import React, { useState } from "react";
 import * as Yup from "yup";
 import Thread from "../models/Thread";
 import { useStore } from "../stores";
+import getErrorMessage from "../utilities/getErrorMessage";
+import ErrorMessage from "./ErrorMessage";
 import MarkdownGuideCard from "./MarkdownGuideCard";
 
 type Props = {
@@ -15,6 +17,7 @@ const PostForm: React.FC<Props> = ({ threadPk, thread, token }) => {
   const store = useStore();
   const authorPk = store.accountsStore.authenticated_user?.pk as number;
   const [showMarkdownGuide, setShowMarkdownGuide] = useState(false);
+  const [error, setError] = useState<string>();
 
   const handleMarkdownClick = () => {
     setShowMarkdownGuide(!showMarkdownGuide);
@@ -28,13 +31,18 @@ const PostForm: React.FC<Props> = ({ threadPk, thread, token }) => {
         message: Yup.string().trim().required("Message must not be empty"),
       }),
       onSubmit: async (values) => {
-        await store.contentStore.createPost(
-          values.message,
-          threadPk,
-          authorPk,
-          thread.boardPk,
-          token
-        );
+        try {
+          await store.contentStore.createPost(
+            values.message,
+            threadPk,
+            authorPk,
+            thread.boardPk,
+            token
+          );
+        } catch (error) {
+          setError(getErrorMessage(error));
+        }
+
         resetForm();
       },
     });
@@ -57,6 +65,7 @@ const PostForm: React.FC<Props> = ({ threadPk, thread, token }) => {
       >
         Comment
       </button>
+      {error && <ErrorMessage message={error} />}
       <div className="flex flex-col">
         <button
           className="text-center my-3 border-2 border-gray-400 hover:bg-gray-200 rounded-md mx-auto p-2"

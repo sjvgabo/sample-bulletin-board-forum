@@ -1,16 +1,24 @@
 import { observer } from "mobx-react";
-import React from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useStore } from "../stores";
+import getErrorMessage from "../utilities/getErrorMessage";
 import Avatar from "./Avatar";
+import ErrorMessage from "./ErrorMessage";
 
 const UserNav: React.FC = () => {
   const store = useStore();
   const navigate = useNavigate();
   const isAuthenticated = store.accountsStore.authenticated;
   const user = store.accountsStore.authenticated_user;
-  const handleClick = () => {
-    store.accountsStore.logOutUser();
+  const [error, setError] = useState<string>();
+  const handleClick = async () => {
+    try {
+      await store.accountsStore.logOutUser();
+      setError(undefined);
+    } catch (err) {
+      setError(getErrorMessage(err));
+    }
     navigate("/");
   };
 
@@ -34,6 +42,7 @@ const UserNav: React.FC = () => {
             <button className="text-white" onClick={handleClick}>
               Log Out
             </button>
+            {error && <ErrorMessage message={error} />}
           </div>
         </div>
       </div>

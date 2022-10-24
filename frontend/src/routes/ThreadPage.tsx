@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import DeleteThreadButton from "../components/DeleteThreadButton";
 import Divider from "../components/Divider";
+import ErrorMessage from "../components/ErrorMessage";
 import { Loading } from "../components/Loading";
 import LockThreadButton from "../components/LockThreadButton";
 import Paginator from "../components/Paginator";
@@ -44,15 +45,15 @@ const ThreadPage: React.FC = () => {
   const itemPerPage = 20;
   const [error, setError] = useState<string>();
   useEffect(() => {
-    try {
-      (async () => {
+    (async () => {
+      try {
         if (!board) {
           await store.contentStore.fetchBoard(
             parseInt(params.boardPk, 10),
             parseInt(params.topicPk, 10)
           );
         }
-        if (!thread) { 
+        if (!thread) {
           await store.contentStore.fetchThread(
             parseInt(params.boardPk, 10),
             parseInt(params.threadPk, 10)
@@ -68,11 +69,11 @@ const ThreadPage: React.FC = () => {
           setPageCount(Math.ceil(thread.noOfPosts / itemPerPage));
           setLoading(false);
         }
-      })();
-    } catch (error) {
-      const errorString = getErrorMessage(error);
-      setError(errorString);
-    }
+      } catch (error) {
+        const errorString = getErrorMessage(error);
+        setError(errorString);
+      }
+    })();
   }, [
     board,
     pageNumber,
@@ -86,13 +87,22 @@ const ThreadPage: React.FC = () => {
 
   const handleLockClick = async () => {
     if (thread) {
-      thread?.toggleLockThread(token);
+      try {
+        thread?.toggleLockThread(token);
+      } catch (error) {
+        setError(getErrorMessage(error));
+      }
     }
   };
 
   const handleThreadDelete = async () => {
     if (thread && board) {
-      await store.contentStore?.deleteThread(thread.pk, token, board.pk);
+      try {
+        await store.contentStore?.deleteThread(thread.pk, token, board.pk);
+      } catch (error) {
+        setError(getErrorMessage(error));
+      }
+
       navigate(`/topic/${params.topicPk}/board/${params.boardPk}/`);
     }
   };
@@ -100,11 +110,15 @@ const ThreadPage: React.FC = () => {
   const handlePageClick = async (selectedItem: {
     selected: number;
   }): Promise<void> => {
-    setPageNumber(selectedItem.selected + 1);
-    await store.contentStore.fetchPosts(
-      parseInt(params.threadPk, 10),
-      selectedItem.selected + 1
-    );
+    try {
+      setPageNumber(selectedItem.selected + 1);
+      await store.contentStore.fetchPosts(
+        parseInt(params.threadPk, 10),
+        selectedItem.selected + 1
+      );
+    } catch (error) {
+      setError(getErrorMessage(error));
+    }
   };
 
   if (loading) {
@@ -131,7 +145,7 @@ const ThreadPage: React.FC = () => {
             )}
             <Divider />
             {/* Post list arranged according to post date descending */}
-            {posts && posts.length > 0 ? (
+            {posts && posts.length > 0 && !error ? (
               <div className="ml-5">
                 {posts.map((post) => (
                   <PostCard key={post.pk} post={post} thread={thread} />
@@ -140,6 +154,7 @@ const ThreadPage: React.FC = () => {
             ) : (
               <div>No posts yet</div>
             )}
+            {error && <ErrorMessage message={error} />}
 
             {/* Pagination */}
             <Paginator
@@ -170,8 +185,7 @@ const ThreadPage: React.FC = () => {
       </div>
     );
   }
-  if (error) return <ErrorPage message={error} />;
-  return <div></div>
+  return <div></div>;
 };
 
 export default observer(ThreadPage);

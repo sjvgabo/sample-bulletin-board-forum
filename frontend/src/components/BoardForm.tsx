@@ -1,12 +1,15 @@
 import { useFormik } from "formik";
 import { observer } from "mobx-react-lite";
-import React from "react";
+import React, { useState } from "react";
 import * as Yup from "yup";
+import getErrorMessage from "../utilities/getErrorMessage";
+import ErrorMessage from "./ErrorMessage";
 
 type Props = {
-  handleCreateBoard: (name: string, description: string) => void;
+  handleCreateBoard: (name: string, description: string) => Promise<void>;
 };
 const BoardForm: React.FC<Props> = ({ handleCreateBoard }) => {
+  const [error, setError] = useState<string>();
   const { handleSubmit, handleChange, values, errors, touched, resetForm } =
     useFormik({
       initialValues: {
@@ -20,8 +23,12 @@ const BoardForm: React.FC<Props> = ({ handleCreateBoard }) => {
           .required("Description must not be empty"),
       }),
       onSubmit: async (values) => {
-        handleCreateBoard(values.name, values.description);
-        resetForm();
+        try {
+          await handleCreateBoard(values.name, values.description);
+          resetForm();
+        } catch (err) {
+          setError(getErrorMessage(err));
+        }
       },
     });
 
@@ -57,6 +64,7 @@ const BoardForm: React.FC<Props> = ({ handleCreateBoard }) => {
       >
         Submit
       </button>
+      {error && <ErrorMessage message={error} />}
     </form>
   );
 };

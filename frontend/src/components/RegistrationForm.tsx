@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import * as Yup from "yup";
 import { useStore } from "../stores";
 import getErrorMessage from "../utilities/getErrorMessage";
+import ErrorMessage from "./ErrorMessage";
 
 type Props = {
   handleNavigate: () => void;
@@ -64,7 +65,6 @@ const RegistrationForm: React.FC<Props> = ({ handleNavigate }) => {
         } catch (error) {
           setError(getErrorMessage(error));
         }
-        
       },
     });
 
@@ -242,12 +242,10 @@ const RegistrationForm: React.FC<Props> = ({ handleNavigate }) => {
         type="submit"
       >
         Create Account
-      </button> 
-      {error && <div>Error in creating account. {error}</div>}
+      </button>
+      {error && <ErrorMessage message={error} />}
     </form>
-   
   );
-  
 };
 
 export default observer(RegistrationForm);

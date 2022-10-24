@@ -1,9 +1,11 @@
 import { useFormik } from "formik";
 import { observer } from "mobx-react-lite";
-import React from "react";
+import React, { useState } from "react";
 import * as Yup from "yup";
 import User from "../models/User";
 import { useStore } from "../stores";
+import getErrorMessage from "../utilities/getErrorMessage";
+import ErrorMessage from "./ErrorMessage";
 
 type Props = {
   user: User;
@@ -17,6 +19,7 @@ const ProfileForm: React.FC<Props> = ({ user, handleEdit }) => {
   const handleCancel = () => {
     handleEdit(false);
   };
+  const [error, setError] = useState<string>();
 
   const { handleSubmit, handleChange, values, touched, errors, resetForm } =
     useFormik({
@@ -45,13 +48,17 @@ const ProfileForm: React.FC<Props> = ({ user, handleEdit }) => {
         website: Yup.string().max(50, "Max of 50 characters").notRequired(),
       }),
       onSubmit: async (values) => {
-        await user.partialUpdateUser(values, token);
-        await store.accountsStore.fetchUser(user.pk);
-        resetForm();
-        handleEdit(false);
+        try {
+          await user.partialUpdateUser(values, token);
+          await store.accountsStore.fetchUser(user.pk);
+          resetForm();
+          handleEdit(false);
+        } catch (err) {
+          setError(getErrorMessage(err));
+        }
       },
     });
-
+  if (error) return <ErrorMessage message={error} />;
   return (
     <form className="flex flex-col px-5" onSubmit={handleSubmit}>
       <div className="flex my-1.5">

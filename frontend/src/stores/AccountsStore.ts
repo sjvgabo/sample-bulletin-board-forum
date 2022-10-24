@@ -62,15 +62,15 @@ export default class AccountsStore extends Model({
       date_of_birth: moment(new Date(data.date_of_birth)).format("YYYY-MM-DD"),
     };
     let response: Response;
-      response = yield* _await(
-        fetch(`${process.env.REACT_APP_API_BASE_LINK}/auth/registration/`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(newUser),
-        })
-      );
+    response = yield* _await(
+      fetch(`${process.env.REACT_APP_API_BASE_LINK}/auth/registration/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newUser),
+      })
+    );
 
     if (response.ok) {
       alert("Account successfully created");
@@ -78,25 +78,25 @@ export default class AccountsStore extends Model({
     } else {
       let error: string;
       error = yield* _await(response.text());
-      alert(error);
+      throw error;
     }
   });
 
   @modelFlow
   authUser = _async(function* (this: AccountsStore, loginData: LoginDataInput) {
     let response: Response;
-      response = yield* _await(
-        fetch(`${process.env.REACT_APP_API_BASE_LINK}/auth/login/`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(loginData),
-        })
-      );
 
+    response = yield* _await(
+      fetch(`${process.env.REACT_APP_API_BASE_LINK}/auth/login/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(loginData),
+      })
+    );
     let data: any;
-      data = yield* _await(response.json());
+    data = yield* _await(response.json());
 
     if (data.user) {
       yield* _await(
@@ -118,7 +118,7 @@ export default class AccountsStore extends Model({
       this.authenticated_user = data.user;
       this.token = data.key;
       return;
-    } 
+    }
   });
 
   @modelFlow
@@ -172,55 +172,44 @@ export default class AccountsStore extends Model({
   logOutUser = _async(function* (this: AccountsStore) {
     // Log user out of api
     let response: Response;
-    try {
-      response = yield* _await(
-        fetch(`${process.env.REACT_APP_API_BASE_LINK}/auth/logout/`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Token ${this.token}`,
-          },
-        })
-      );
-    } catch (error) {
-      alert("Error logging user out.");
-      return;
-    }
+    response = yield* _await(
+      fetch(`${process.env.REACT_APP_API_BASE_LINK}/auth/logout/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Token ${this.token}`,
+        },
+      })
+    );
 
     if (!response.ok) {
       alert(`${response.status} Response error. Token invalid.`);
     }
 
     // Clear local forage
-    try {
-      yield* _await(localforage.clear());
-    } catch (error) {
-      alert("Error clearing localforage");
-      console.log(error);
-    } finally {
-      this.setAuthenticated(false);
-      this.authenticated_user = undefined;
-      this.token = "";
-      return;
-    }
+    yield* _await(localforage.clear());
+    this.setAuthenticated(false);
+    this.authenticated_user = undefined;
+    this.token = "";
+    return;
   });
 
   @modelFlow
   fetchUser = _async(function* (this: AccountsStore, userPk: number) {
     let response: Response;
-    try {
-      response = yield* _await(
-        fetch(`${process.env.REACT_APP_API_BASE_LINK}/auth/users/${userPk}`)
-      );
-      if (response.ok) {
-        let data: UserAPIData;
-        data = yield* _await(response.json());
-        this.currentUser = new User({
-          ...data,
-        });
-      }
-    } catch (error) {
-      alert("Error in fetching user from database");
+    response = yield* _await(
+      fetch(`${process.env.REACT_APP_API_BASE_LINK}/auth/users/${userPk}`)
+    );
+    if (response.ok) {
+      let data: UserAPIData;
+      data = yield* _await(response.json());
+      this.currentUser = new User({
+        ...data,
+      });
+    } else {
+      let error: string;
+      error = yield* _await(response.text());
+      throw error;
     }
   });
 
@@ -231,24 +220,15 @@ export default class AccountsStore extends Model({
     pageNumber: number = 1
   ) {
     let response: Response;
-    try {
-      response = yield* _await(
-        fetch(
-          `${process.env.REACT_APP_API_BASE_LINK}/content/post/?username=${username}&page=${pageNumber}`
-        )
-      );
-    } catch (error) {
-      console.error(error);
-      return;
-    }
+    response = yield* _await(
+      fetch(
+        `${process.env.REACT_APP_API_BASE_LINK}/content/post/?username=${username}&page=${pageNumber}`
+      )
+    );
 
     let data: any = {};
-    try {
-      data = yield* _await(response.json());
-    } catch (error) {
-      console.error(error);
-      return;
-    }
+    data = yield* _await(response.json());
+
     this.currentPosts = data.results.map(
       (post: PostData) =>
         new Post({
@@ -268,35 +248,56 @@ export default class AccountsStore extends Model({
     let data: FormData = new FormData();
     data.append("avatar_url", image);
     let response: Response;
-    try {
-      response = yield* _await(
-        fetch(
-          `${process.env.REACT_APP_API_BASE_LINK}/auth/users/${this.authenticated_user?.pk}/`,
-          {
-            method: "PATCH",
-            headers: {
-              Authorization: `Token ${this.token}`,
-            },
-            body: data,
-          }
-        )
-      );
-    } catch (error) {
-      alert("Update Error: Error in database.");
-      return;
-    }
+    response = yield* _await(
+      fetch(
+        `${process.env.REACT_APP_API_BASE_LINK}/auth/users/${this.authenticated_user?.pk}/`,
+        {
+          method: "PATCH",
+          headers: {
+            Authorization: `Token ${this.token}`,
+          },
+          body: data,
+        }
+      )
+    );
+
     let responseData: any;
     if (response.ok) {
       alert("Avatar updated");
-    } else {
-      alert("Error in updating avatar. Recheck values submitted");
     }
-    try {
-      responseData = yield* _await(response.json());
-    } catch (error) {
-      alert("Error parsing response data");
-      return;
+
+    responseData = yield* _await(response.json());
+
+    this.setAuthenticated_user(responseData);
+    yield* _await(
+      localforage.setItem(
+        process.env.REACT_APP_USER_INFO_KEY as string,
+        responseData
+      )
+    );
+  });
+
+  @modelFlow
+  removeAvatar = _async(function* (this: AccountsStore) {
+    let response: Response;
+    response = yield* _await(
+      fetch(
+        `${process.env.REACT_APP_API_BASE_LINK}/auth/users/${this.authenticated_user?.pk}/remove_avatar/`,
+        {
+          method: "PATCH",
+          headers: {
+            Authorization: `Token ${this.token}`,
+          },
+        }
+      )
+    );
+
+    let responseData: any;
+    if (response.ok) {
+      alert("Avatar updated");
     }
+
+    responseData = yield* _await(response.json());
     this.setAuthenticated_user(responseData);
     yield* _await(
       localforage.setItem(

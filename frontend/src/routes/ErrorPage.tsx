@@ -2,7 +2,7 @@ import React from "react";
 
 type Props = {
   message?: string;
-}
+};
 const ErrorPage: React.FC<Props> = ({ message }) => {
   return (
     <div className="flex flex-1 justify-center items-center flex-col h-screen">

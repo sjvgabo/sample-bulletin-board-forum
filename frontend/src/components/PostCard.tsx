@@ -9,6 +9,8 @@ import { useStore } from "../stores";
 import Avatar from "./Avatar";
 import TimeSince from "./TimeSince";
 import UserHoverCard from "./UserHoverCard";
+import getErrorMessage from "../utilities/getErrorMessage";
+import ErrorMessage from "./ErrorMessage";
 type Props = {
   post: Post;
   thread?: Thread;
@@ -19,9 +21,15 @@ const PostCard: React.FC<Props> = ({ post, thread }) => {
   const userPk = store.accountsStore.authenticated_user?.pk;
   const token = store.accountsStore.token;
   const [user, setUser] = useState<User>();
+  const [error, setError] = useState<string>();
+
   const handleDelete = async () => {
     if (thread) {
-      await store.contentStore.deletePost(post.pk, token, thread.pk);
+      try {
+        await store.contentStore.deletePost(post.pk, token, thread.pk);
+      } catch (error) {
+        setError(getErrorMessage(error));
+      }
     }
   };
 
@@ -69,6 +77,7 @@ const PostCard: React.FC<Props> = ({ post, thread }) => {
                 Delete
               </button>
             )}
+            {error && <ErrorMessage message={error} />}
           </div>
         )}
       </div>

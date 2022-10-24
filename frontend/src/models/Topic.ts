@@ -20,26 +20,14 @@ export default class Topic extends Model({
   @modelFlow
   fetchBoards = _async(function* (this: Topic, pageNumber: number = 1) {
     let response: Response;
-    try {
-      response =
-        yield *
-        _await(
-          fetch(
-            `${process.env.REACT_APP_API_BASE_LINK}/content/board/?topic=${this.pk}`
-          )
-        );
-    } catch (error) {
-      console.log("FETCH ERROR:", error);
-      return;
-    }
+    response = yield* _await(
+      fetch(
+        `${process.env.REACT_APP_API_BASE_LINK}/content/board/?topic=${this.pk}`
+      )
+    );
 
     let data: any = [];
-    try {
-      data = yield* _await(response.json());
-    } catch (error) {
-      console.log("PARSE ERROR", error);
-      return;
-    }
+    data = yield* _await(response.json());
 
     this.boards = data.map(
       (board: BoardData) =>
@@ -61,29 +49,26 @@ export default class Topic extends Model({
   @modelFlow
   deleteBoard = _async(function* (this: Topic, boardPk: number, token: string) {
     let response: Response;
-    try {
-      response = yield* _await(
-        fetch(
-          `${process.env.REACT_APP_API_BASE_LINK}/content/board/${boardPk}/`,
-          {
-            method: "DELETE",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Token ${token}`,
-            },
-          }
-        )
-      );
-    } catch (error) {
-      alert("Error in deleting the Board");
-      return;
-    }
+    response = yield* _await(
+      fetch(
+        `${process.env.REACT_APP_API_BASE_LINK}/content/board/${boardPk}/`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Token ${token}`,
+          },
+        }
+      )
+    );
 
     if (response.ok) {
       alert("Board deleted");
       yield* _await(this.fetchBoards());
     } else {
-      alert("Error in deleting board. Check authentication.");
+      let error: string;
+      error = yield* _await(response.text());
+      throw error;
     }
   });
 
@@ -95,32 +80,28 @@ export default class Topic extends Model({
     token: string
   ) {
     let response: Response;
-    try {
-      response = yield* _await(
-        fetch(`${process.env.REACT_APP_API_BASE_LINK}/content/board/`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Token ${token}`,
-          },
-          body: JSON.stringify({
-            name: name,
-            description: description,
-            topic: this.pk,
-          }),
-        })
-      );
-    } catch (error) {
-      alert("Error creating new board");
-      return;
-    }
+    response = yield* _await(
+      fetch(`${process.env.REACT_APP_API_BASE_LINK}/content/board/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Token ${token}`,
+        },
+        body: JSON.stringify({
+          name: name,
+          description: description,
+          topic: this.pk,
+        }),
+      })
+    );
 
     if (response.ok) {
       alert("Succesfully created board");
       yield* _await(this.fetchBoards());
     } else {
-      alert("Error in database. Failed to created new board.");
-      return;
+      let error: string;
+      error = yield* _await(response.text());
+      throw error;
     }
   });
 }

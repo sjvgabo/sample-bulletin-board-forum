@@ -33,30 +33,27 @@ export default class Board extends Model({
       topic: topicPk,
     };
     let response: Response;
-    try {
-      response = yield* _await(
-        fetch(
-          `${process.env.REACT_APP_API_BASE_LINK}/content/board/${this.pk}/`,
-          {
-            method: "PATCH",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Token ${token}`,
-            },
-            body: JSON.stringify(topicData),
-          }
-        )
-      );
-    } catch (error) {
-      alert("Update Error: Error in database.");
-      return;
-    }
+    response = yield* _await(
+      fetch(
+        `${process.env.REACT_APP_API_BASE_LINK}/content/board/${this.pk}/`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Token ${token}`,
+          },
+          body: JSON.stringify(topicData),
+        }
+      )
+    );
 
     if (response.ok) {
       this.setTopic_pk(topicPk);
       alert("Successfully moved the board.");
     } else {
-      alert("Error in changing the board topic.");
+      let error: string;
+      error = yield* _await(response.text());
+      throw error;
     }
   });
 }

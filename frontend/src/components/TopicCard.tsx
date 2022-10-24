@@ -3,9 +3,11 @@ import React, { useEffect, useState } from "react";
 import Board from "../models/Board";
 import Topic from "../models/Topic";
 import { useStore } from "../stores";
+import getErrorMessage from "../utilities/getErrorMessage";
 import BoardCard from "./BoardCard";
 import BoardForm from "./BoardForm";
 import Divider from "./Divider";
+import ErrorMessage from "./ErrorMessage";
 import { Loading } from "./Loading";
 
 type Props = { topic: Topic };
@@ -15,6 +17,7 @@ const TopicCard: React.FC<Props> = ({ topic }) => {
   const store = useStore();
   const user = store.accountsStore.authenticated_user;
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string>();
 
   const handleCreateBoard = async (name: string, description: string) => {
     await topic.createBoard(name, description, store.accountsStore.token);
@@ -22,8 +25,12 @@ const TopicCard: React.FC<Props> = ({ topic }) => {
 
   useEffect(() => {
     (async () => {
-      await topic.fetchBoards();
-      setLoading(false);
+      try {
+        await topic.fetchBoards();
+        setLoading(false);
+      } catch (error) {
+        setError(getErrorMessage(error));
+      }
     })();
   }, [topic]);
 
@@ -42,6 +49,7 @@ const TopicCard: React.FC<Props> = ({ topic }) => {
       </div>
       <div className="text-xl my-3">Boards</div>
       <div className="grid grid-cols-4 gap-3 z-0">
+        {error && <ErrorMessage message={error} />}
         {boards.map((board: Board) => (
           <BoardCard key={board.pk} topicPk={topic.pk} board={board} />
         ))}

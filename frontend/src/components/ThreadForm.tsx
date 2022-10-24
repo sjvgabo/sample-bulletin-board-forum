@@ -1,9 +1,11 @@
 import { useFormik } from "formik";
 import { observer } from "mobx-react-lite";
-import React from "react";
+import React, { useState } from "react";
 import * as Yup from "yup";
 import Board from "../models/Board";
 import { useStore } from "../stores";
+import getErrorMessage from "../utilities/getErrorMessage";
+import ErrorMessage from "./ErrorMessage";
 
 type Props = {
   board: Board;
@@ -11,6 +13,7 @@ type Props = {
 const ThreadForm: React.FC<Props> = ({ board }) => {
   const store = useStore();
   const authorPk = store.accountsStore.authenticated_user?.pk as number;
+  const [error, setError] = useState<string>();
 
   const { handleSubmit, handleChange, values, errors, touched, resetForm } =
     useFormik({
@@ -21,13 +24,17 @@ const ThreadForm: React.FC<Props> = ({ board }) => {
         title: Yup.string().required("Title must not be empty"),
       }),
       onSubmit: async (values) => {
-        await store.contentStore.createThread(
-          values.title,
-          authorPk,
-          board.pk,
-          store.accountsStore.token
-        );
-        resetForm();
+        try {
+          await store.contentStore.createThread(
+            values.title,
+            authorPk,
+            board.pk,
+            store.accountsStore.token
+          );
+          resetForm();
+        } catch (err) {
+          setError(getErrorMessage(err));
+        }
       },
     });
 
@@ -52,6 +59,7 @@ const ThreadForm: React.FC<Props> = ({ board }) => {
       >
         Submit
       </button>
+      {error && <ErrorMessage message={error} />}
     </form>
   );
 };
