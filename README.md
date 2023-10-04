@@ -39,13 +39,18 @@ This project was done to create a simple bulletin board system where users can c
 
 ## Dependencies
 
-- Python <Insert Version>
-- Yarn <insert Version>
-- Poetry <insert Version>
+- Python 3.9
+- Yarn v1.22.19
+- Poetry 1.2.2
 
 ## Set up
 
-### 1. Django
+### 1. Environment Variables
+
+- Create a new .env file in the home repository using the .env.example as a base
+- Then, create another .env file this time in the frontend directory. Use the .env.example there as a base
+
+### 2. Django
 
 From home directory run the following commands:
 ```
@@ -59,7 +64,7 @@ Create a new admin to manage the forum
 poetry run python manage.py createsuperuser
 ```
 
-### 2. React
+### 3. React
 
 To install the modules needed for the frontend, run the following command from the home repository:
 ```
@@ -67,9 +72,7 @@ cd frontend
 yarn install
 ```
 
-### 3. Environment Variables
 
-Create a new .env file in the home repository using the .env.example as a base
 
 ## Quick Start
 
